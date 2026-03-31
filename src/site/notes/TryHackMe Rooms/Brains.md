@@ -1,12 +1,19 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T23:03:56.459+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T23:05:30.201+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"]}}
 ---
 
 ![](/img/user/Attachments/1_IpVNsJXvAdv12YJ82oxO3A-2241369949.png)
 
 ## Description
 
-This room demonstrates ....
+#### This room demonstrates: 
+
+- 2 unauthenticated bypasses leading to full control of the system
+- Exposed stacktrace message leads to identifying critical vulnerabilities
+- RCE & administrator access to web interface
+
+
+It is paramout that any organisation can ensure that there are limitations on what is kind of information is displayed via error messages. These error messages can enable a threat actor to identify vulnerabilities, establish an attack path and harm the infrastructure of a business or worse.
 
 
 ## Recon
