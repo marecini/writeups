@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T21:43:24.928+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T22:59:28.610+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"]}}
 ---
 
 ## Description
@@ -62,7 +62,7 @@ And once I run the script I am able to log into the panel
 
 ![](/img/user/Attachments/loginsuccess.png)
 
-A more detailed explanation of the vulnerabilities can be found from [[Rapid7https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/\|Rapid7https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/]]
+A more detailed explanation of the vulnerabilities can be found from [Rapid7](https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/)
 
 ![](/img/user/Attachments/rapid7-vuln-description.png)
 
@@ -75,12 +75,45 @@ Lets see if it is possible to establish a shell connection via SSH.
 
 Let's generate a SSH key 
 
-`ssh-keygen -t ed25319 -C "administrator@domain.com" -f ~/.ssh/id_brains
+`ssh-keygen -t ed25319 -C "administrator@domain.com"
+
 ![](/img/user/Attachments/ssh-generated.png)
 
 Lets upload the private key via the web interface
 
 ![](/img/user/Attachments/ssh-gen.png)
 
-For some reason SSH is blocked. Perhaps this is not the intended **attack path** moving on...
+For some reason SSH is blocked. Perhaps this is not the intended **attack path** moving on..
+
+Looking for a different PoC on github RCE is achieved running the exploit on the target.
+
+I will refer to the CVE = **[CVE_2024_21798](https://github.com/W01fh4cker/CVE-2024-27198-RCE/blob/main/CVE-2024-27198-RCE.py)**
+
+`pyython3 exploit.py -t http://TARGET:PORT`
+
+![](/img/user/Attachments/rce-achieved.png)
+
+Lets locate the users on the system
+![](/img/user/Attachments/locate-users.png)
+
+## Post-exploitation
+
+Lets identify if **netcat** is on the system since this is an unstable shell and the connection might get dropped and otherwise is annoying to work with. 
+
+![](/img/user/Attachments/identify-nc.png)
+
+
+Now grabbing the reverse shell in netcat 
+
+![](/img/user/Attachments/reverse-shell-established.png)
+### First Flag
+
+`THM{faa9bac345709b6620a6200b484c7594}`
+![](/img/user/Attachments/pwned.png)
+
+
+
+
 ## Attack Pattern Analysis
+
+Nmap > apache server vulnerable to auth bypass > PoC exploit from github > RCE & Admin access to web interface > 
