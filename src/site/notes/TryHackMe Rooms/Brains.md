@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T20:48:21.204+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T21:23:01.829+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup"]}}
 ---
 
 
@@ -37,7 +37,8 @@ Source code for the login page reveals something interesting ![](/img/user/Attac
 
 ```
 
-So, googling the error in the stack trace above led me to find 2 **authentication bypasses**. 
+So, googling the error in the stack trace shows not much. However googling the Teamcity version quickly led me to find 2 **authentication bypass cve's**
+
 I quickly find github repo's listing available exploits which are ready to use python scripts.
 ![](/img/user/Attachments/teamcity-cve-search.png)
 
@@ -45,11 +46,18 @@ Link: https://github.com/yoryio/CVE-2024-27198
 
 ![](/img/user/Attachments/cve1.png)
 
-Saving the script and running it creates a new user and apparently gives access to the page. 
+Saving the script and running it creates a new user and  gives full access to the system. 
 
-An **Unexpected error** is seen once logged in.
-![](/img/user/Attachments/unexpected_error.png)
+And once I run the script I am able to log into the panel
 
-A more detailed explanation of the vulnerabilities can be found from [Rapid7][()](https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/) 
+![](/img/user/Attachments/loginsuccess.png)
+
+A more detailed explanation of the vulnerabilities can be found from [[Rapid7https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/\|Rapid7https://www.rapid7.com/blog/post/2024/03/04/etr-cve-2024-27198-and-cve-2024-27199-jetbrains-teamcity-multiple-authentication-bypass-vulnerabilities-fixed/]]
 
 ![](/img/user/Attachments/rapid7-vuln-description.png)
+
+
+Let's generate a SSH key 
+
+`ssh-keygen -t ed25319 -C "administrator@domain.com" -f ~/.ssh/id_brains
+![](/img/user/Attachments/ssh-generated.png)
