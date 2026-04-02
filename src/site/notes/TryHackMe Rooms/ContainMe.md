@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","tags":["gardenEntry"],"created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T16:04:52.089+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","tags":["gardenEntry"],"created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T16:57:47.042+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -129,17 +129,33 @@ Using **DevTools** to explore further there are no API-calls or cookies being us
 
 ![](/img/user/Attachments/ffuf.png)
 
-Interesting endpoints are found via ffuf.
-
-1. info.php
-2. index.php
-3. index.html
 ### Further Inaccessible Endpoints
 
 * /server-status 
 * /server-info 
 * /.htpasswd 
 * /cgi-bin
+
+Interesting endpoints are found via ffuf.
+
+1. info.php
+2. index.php
+3. index.html
+
+**info.php**
+
+![](/img/user/Attachments/info.php.png)
+
+Let's see if there are any exploits available for this particular PHP version
+![](/img/user/Attachments/php_vuln_version.png)
+
+
+Using searchsploit to search for anything ....
+`searchsploit php 7.2`
+
+![](/img/user/Attachments/searchsploit.png)
+
+
 ## Exploitation
 
 ## Post-exploitation
