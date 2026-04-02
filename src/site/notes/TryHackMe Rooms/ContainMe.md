@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","tags":["gardenEntry"],"created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T16:02:30.999+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","tags":["gardenEntry"],"created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T16:04:52.089+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -123,7 +123,18 @@ Examining the header
 
 Using **DevTools** to explore further there are no API-calls or cookies being used for session management. 
 
-#### Further Inaccessible Endpoints
+### Fuzzing
+
+`ffuf -u http://10.113.154.153/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.html,.txt,.bak -o ffuf.txt`
+
+![](/img/user/Attachments/ffuf.png)
+
+Interesting endpoints are found via ffuf.
+
+1. info.php
+2. index.php
+3. index.html
+### Further Inaccessible Endpoints
 
 * /server-status 
 * /server-info 
