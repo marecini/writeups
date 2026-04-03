@@ -1,10 +1,15 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T18:47:50.204+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T19:21:56.900+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
 ## Description
 
+This room demonstrates the vulnerabilities in:
+1. SUID-binaries
+2. Command injection
+3. Weak sanitization of URLs
+4. Weak permissions on the server
 
 ## Recon
 
@@ -381,8 +386,27 @@ Starting with **mysql** because it is the most obvious to target lets identify f
 ![](/img/user/Attachments/3306active.png)
 
 
-Now let's use a dictionary to find the password for mike
+Now let's use a dictionary to find the password for mike. Using several wordlists yielded nothing despite the password being defaulted to `password` 
 
+![](/img/user/Attachments/dbacccess.png)
+
+Now lets explore the database
+
+First identifying the available databases 
+
+`show databases;`
+
+Next is to select the table and lastly reveal its contents
+
+`use accounts;`
+
+![](/img/user/Attachments/2db.png)
+
+Now the credentials for the users and mike is found.
+
+`select * from users;`
+
+![](/img/user/Attachments/dbpwned.png)
 ## Pwnage
 
 First flag: 
