@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T19:21:56.900+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T19:27:33.237+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -10,6 +10,7 @@ This room demonstrates the vulnerabilities in:
 2. Command injection
 3. Weak sanitization of URLs
 4. Weak permissions on the server
+5. Unhashed/unencrypted passwords stored in database
 
 ## Recon
 
@@ -366,6 +367,7 @@ By either guessiing or scanning for the target host (in this case **host2**) it 
 
 ![](/img/user/Attachments/host2.png)
 
+----------
 
 Once again checking for binaries with **setuid** on might be the first wise thing to do. 
 
@@ -390,6 +392,8 @@ Now let's use a dictionary to find the password for mike. Using several wordlist
 
 ![](/img/user/Attachments/dbacccess.png)
 
+______
+
 Now lets explore the database
 
 First identifying the available databases 
@@ -407,9 +411,36 @@ Now the credentials for the users and mike is found.
 `select * from users;`
 
 ![](/img/user/Attachments/dbpwned.png)
+
+**Credentials**
+```
++-------+---------------------+  
+| login | password            |  
++-------+---------------------+  
+| root  | bjsig4868fgjjeog    |  
+| mike  | WhatAreYouDoingHere |  
++-------+---------------------+
+
+```
+
+
 ## Pwnage
 
-First flag: 
-Second flag: 
+So, now there is full pwnage of the system
+
+```
+# gain root access of the machine
+su root : bjsig4868fgjjeog
+
+# enter /root and unzip mike.zip
+unzip mike.zip
+
+# reveal the content
+cat mike
+```
+
+Flag:  THM{_Y0U_F0UND_TH3_C0NTA1N3RS_}
+ 
+![](/img/user/Attachments/fullpwnage.png)
 
 ## Attack Pattern Analysis (APA)
