@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T18:02:46.624+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T18:47:50.204+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -273,7 +273,7 @@ As always and is mandatory, the shell must be stabilized.
 
 `python -c 'import pty;pty.spawn("/bin/bash")'`
 
-Running `export TERM=xterm`  sets the terminal type environment variable.
+Running `export TERM=xterm-256color`  sets the terminal type environment variable.
 
 Without it, many terminal features don't work properly — things like:
 
@@ -346,8 +346,42 @@ So running `ifconfig` reveals 2 interfaces. Given the context of the room title 
 
 ![](/img/user/Attachments/2-interfaces.png)
 
+------
+### Pivoting 
+
+So the network which is now the new target is **172.16.20.0/24** . To gain access the ssh keys are required for user mike. 
+
+`cat /home/mike/.ssh/id_rsa`
+
+![](/img/user/Attachments/stealssh.png)
+
+`ssh -i id_rsa mike@172.16.20.X`
+
+By either guessiing or scanning for the target host (in this case **host2**) it can be identified. In this case host2 sits on IP `172.16.20.6`
+
+![](/img/user/Attachments/host2.png)
 
 
+Once again checking for binaries with **setuid** on might be the first wise thing to do. 
+
+`find / -type f -perm 4000 2>/dev/null`
+
+![](/img/user/Attachments/find-command.png)
+
+Lets check for running services 
+
+`service --status-all`
+
+![](/img/user/Attachments/runningservices.png)
+
+Starting with **mysql** because it is the most obvious to target lets identify first for the sake of it the port service
+
+`ss -tlnp | grep 3306`
+
+![](/img/user/Attachments/3306active.png)
+
+
+Now let's use a dictionary to find the password for mike
 
 ## Pwnage
 
