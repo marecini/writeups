@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-03T23:20:08.413+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-03T23:36:42.186+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -59,4 +59,38 @@ Now deleting the exploit and exiting the shell
 ______
 
 ## Weak File Permissions - Readable /etc/shadow
+
+reading the `/etc/shadow` file which should only readable by **root**
+
+`ls -l /etc/shadow`
+
+![](/img/user/Attachments/etcshadow.png)
+
+Reading the content of /etc/shadow
+
+`cat /etc/shadow`
+
+![](/img/user/Attachments/etcshadow-content.png)
+
+Each line of the file represents a user. A user's password hash (if they have one) can be found between the first and second colons (:) of each line.
+
+Now saving **root** hash into a file and using **john** to crack it. 
+
+`john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt`
+
+![](/img/user/Attachments/roothashcrack.png)
+
+Now switching to root is a walk in the park `su root`
+
+![](/img/user/Attachments/root2.png)
+
+
+---------
+
+## Weak File Permissions - Writeable /etc/shadow
+
+
+
+
+
 
