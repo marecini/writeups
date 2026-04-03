@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T15:16:43.325+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T16:18:13.012+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -306,20 +306,22 @@ Considering running linpeas at this moment.
 
 ----------------
 Looking at running processes the commands which I ran earlier are shown.
-* The reverse shell establishment is seen on line 3
-* the stabilisation of the shell is seen on line 4
-* Executing the .sh script is seen on line 2
+```
+www-data  6800  sh -c ls -alh      ← command injection
+www-data  6804  bash /tmp/she      ← shell script execution
+www-data  6836  bash -i            ← reverse shell
+www-data  9814  python3 -c im      ← shell stabilisation
+```
 
 `ps aux`
 
 ![](/img/user/Attachments/psaux.png)
 
-The running processes which stand out 
-```
-root  214  /usr/bin/pyth
-root  1816 /usr/bin/pyth
-```
+-----------
 
+Revisiting **mike** account and checking the **1cryptupx** file out by running it shows the following.
+
+![](/img/user/Attachments/cryptupx.png)
 
 
 ## Pwnage
