@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T16:18:13.012+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","created":"2026-04-02T15:14:28.705+02:00","updated":"2026-04-03T18:02:46.624+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -321,7 +321,32 @@ www-data  9814  python3 -c im      ← shell stabilisation
 
 Revisiting **mike** account and checking the **1cryptupx** file out by running it shows the following.
 
+`/home/mike/1cryptupx`
+
 ![](/img/user/Attachments/cryptupx.png)
+
+I initially tried to copy the **1cryptupx** file to local machine to see if it contained any information for a priv esc. Nothing seemed to seem very promising. 
+
+Running this command will search in the **root** directory for **regular** files with special permissions in this case being **SETUID**. The value 4000 is the octal value for SUID and we cast any error messages to **/dev/null**
+
+`find / -type f -perm /4000 2>/dev/null`
+
+![](/img/user/Attachments/tw.png)
+
+This leads us to a directory where we can execute **crypt** and gain root privileges. Running 
+`./crypt mike` is a success.
+
+![](/img/user/Attachments/root.png)
+
+There is no flag in the usual directory.
+
+![](/img/user/Attachments/no-flag-in-root.png)
+
+So running `ifconfig` reveals 2 interfaces. Given the context of the room title perhaps pivoting to the other interface on this internal network might be the intended attack path.
+
+![](/img/user/Attachments/2-interfaces.png)
+
+
 
 
 ## Pwnage
