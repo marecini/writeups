@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-04T22:54:39.198+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-05T13:03:58.434+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -8,7 +8,7 @@
 
 ## Objectives
 
-Enumerate the machine and get an interactive shell. Exploit an SUID bit file, use GNU debugger to take advantage of a buffer overflow and gain root access by PATH manipulation.
+Enumerate the machine and get an interactive shell. Exploit an SUID bit file, use GNU debugger to take advantage of a buffer overflow and gain root access by PATH manipulation
 
 ## Recon
 
