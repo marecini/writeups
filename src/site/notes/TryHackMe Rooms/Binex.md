@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-05T13:03:58.434+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-05T13:51:11.994+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -87,19 +87,15 @@ Worth also noting that SMB is running on Unix - Samba not a Windows system.
 **Logging in with Default Creds**
 `netexec smb 10.114.173.81 -u 'admin' -p 'admin'`
 
-The login works however the results show that the I only get a guest login likely with low privileges.
-
 ![](/img/user/Attachments/defaultlogin.png)
 
-Since this room is about exploiting binaries perhaps SMB is not the intended attack path. 
+The login works however the results show that the I only get a guest login likely with low privileges. Since this room is about exploiting binaries perhaps SMB is not the intended attack path. 
 
 --------
 
 Moving on to other and better things...
 
 ### Anonymous Login with RPC
-
-Anonymous login with rpcclient is possible however enumeration via this method yielded nothing
 
 `rpcclient -U "" 10.114.173.81`
 
@@ -111,6 +107,7 @@ rpcclient > enumdomusers
 
 ![](/img/user/Attachments/rpcanon.png)
 
+Anonymous login with rpcclient is possible however enumeration via this method yielded nothing
 
 ### Enum4linux
 
@@ -132,6 +129,9 @@ python3 enum4linux-ng.py TARGET
 
 ```
 
+
+![](/img/user/Attachments/enum4linux445.png)
+
 **SSH Dictionary Attack**
 Interesting findings here reveals valuable intel. First off it is confirmed that performing a dictionary attack is a a viable option due to the minimum length of the password is set to **5** which narrows the scope. Also additional useful information is available to us. 
 
@@ -141,7 +141,6 @@ Second interesting finding is it is confirmed that there is `Lockout threshold: 
 **Guest Access**
 As already discovered guest access is wide open.
 
-![](/img/user/Attachments/enum4linux445.png)
 
 -----------
 
@@ -157,9 +156,9 @@ Now initially I tried different ways to attack the SSH. But without a username o
 * RID 501 = Guest
 * RID 1000+ = regular users
 
-Finally several users are revealed. 
-
 ![](/img/user/Attachments/enum4linux-enumusers.png)
+
+Finally several users are revealed. 
 
 ```
 # 4 users are found 
@@ -187,13 +186,9 @@ Let's compile these users to a list
 
 `echo "kel\ndes\ntryhackme\nnoentry\nnobody" > users`
 
-Looking at THM room page there is a hint. 
-
 ![](/img/user/Attachments/hint.png)
 
-The answer format reveals the username has **9 characters**and password **7 characters**
-
-Let's assume username is **tryhackme** 
+Looking at THM room page there is a hint. The answer format reveals the username has **9 characters**and password **7 characters**. Let's assume username is **tryhackme** 
 
 Let's generate a filtered password list based off of rockyou.txt with awk from the password criteria discovered from earlier.
 
@@ -201,9 +196,9 @@ Let's generate a filtered password list based off of rockyou.txt with awk from t
 awk 'length==7' /usr/share/wordlists/rockyou.txt > filteredpw.txt
 ```
 
-Success! 
+Starting dictionary attack
 
-Hydra has found the password for the user **tryhackme**
+`hydra -l tryhackme -P filteredpw.txt 10.114.173.81 ssh -t 4`
 
 ```
 # Credentials
@@ -212,6 +207,10 @@ password: thebest
 ```
 
 ![](/img/user/Attachments/ssh-success.png)
+
+Success! 
+
+Hydra has found the password for the user **tryhackme**
 
 -----------
 
@@ -240,7 +239,7 @@ Intended target is found.
 
 Room also says to use a gnu debugger. lets identify it
 
-`wchich gdb`
+`which gdb`
 
 ```
 Location: usr/bin/gdb
@@ -258,19 +257,15 @@ It appears it is only possible to open the file as the user **des**
 
 `find / -user des 2>/dev/null`
 
-The flag is located in des's directory so that's good to know
-
 ![](/img/user/Attachments/desflaglocated.png)
 
-Looking again for SUID binaries which can be exploited as **tryhackme** user 
+The flag is located in des's directory so that's good to know. Looking again for SUID binaries which can be exploited as **tryhackme** user 
 
 `find / -perm /4000 -user des 2>/dev/null`
 
-So it seems the binary of interest here is find. This shows that the *find* binary is owned by des but *tryhackme* can run it. Let's exploit it. 
-
 ![](/img/user/Attachments/find.png)
 
-Looking to GTFOBins a useful command is found and leads to success! Credentials are found by exploiting the **find** binary to read the **flag.txt** in des home directory
+So it seems the binary of interest here is find. This shows that the *find* binary is owned by des but *tryhackme* can run it. Let's exploit it. Looking to GTFOBins a useful command is found and leads to success! Credentials are found by exploiting the **find** binary to read the **flag.txt** in des home directory
 
 ### 1st Flag is 0wned
 
@@ -309,6 +304,51 @@ password: destructive_72656275696c64
 Read the flag located at /home/kel/flag.txt
 
 
+**Des' home directory**
 
+![](/img/user/Attachments/bof-examination.png)
+
+So logging in as des with the provided password and exploring his home directory reveals a **.c** file likely the buffer overflow which is mentioned in the room. This is the intended attack path to elevate privileges.
+ 
+## Privilege Escalation
+
+## Buffer Overflow 
+
+**Analysis of the *bof64.c***
+
+```
+The vulnerability is here — buffer is 600 bytes but `read()` allows 1000 bytes input. The extra 400 bytes **overflow past the buffer** into the stack.
+
+The goal is to:
+
+1. Overflow the buffer
+2. Overwrite the **return address** on the stack
+3. Point it to **shellcode**
+4. Shellcode executes **as kel** (because of SUID)
+5. A shell as kel is achieved
+6. Read `flag.txt` from kel's home
+```
+
+
+### Create the Pattern
+
+`msf-pattern_create -l 1000`
+
+![](/img/user/Attachments/pattern.png)
+
+Running the program and entering the pattern to the program
+
+![](/img/user/Attachments/entering_pattern.png)
+
+This pattern is generated with the *pattern_create.rb* from metasploit
+
+![](/img/user/Attachments/reading_registers.png)
+
+Now analysing the registers after seeing the **gdb** throws an error `Segmentation fault.` This error message confirms that the overflow attack worked. The room states to copy the RBP for the offset.
+
+**Offset is Identified**
+`rbp            0x4134754133754132       0x4134754133754132`
+
+Time to calculate it 
 
 ## Attack Pattern Analysis (APA)

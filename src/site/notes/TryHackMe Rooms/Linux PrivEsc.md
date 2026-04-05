@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-04T18:29:28.281+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-05T16:48:59.705+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -376,6 +376,27 @@ Find all the SUID/SGID executables on the Debian :
 
 `find / -type f -a \( -perm -u+s -o -perm -g+s \) -exec ls -l {} \; 2> /dev/null`
 
+This is a grouped condition:
+
+- `\(` and `\)` — grouping brackets (escaped with backslash)
+- `-perm -u+s` — file has **SUID** bit set (runs as owner)
+- `-o` — **OR** operator
+- `-perm -g+s` — file has **SGID** bit set (runs as group)
+
+So this finds files with **either SUID or SGID** set
+
+----------
+
+For each file found:
+
+- `-exec` — execute a command
+- `ls -l` — list with full details (permissions, owner, size)
+- `{}` — placeholder for the found file
+- `\;` — end of the exec command
+
+**Command**
+Find all files on the system that have SUID or SGID  bit set, and show their full details, hiding any errors
+
 ```
 user@debian:~$ find / -type f -a \( -perm -u+s -o -perm -g+s \) -exec ls -l {} \;  
 2> /dev/null  
@@ -409,8 +430,93 @@ user@debian:~$ find / -type f -a \( -perm -u+s -o -perm -g+s \) -exec ls -l {} \
 -rwsr-xr-x 1 root root 94992 Dec 13  2014 /sbin/mount.nfs
 ```
 
+Running the **.sh** script gets root. 
+
+-----
+
+## SUID / SGID Executables - Shared Object Injection
+
+The **/usr/local/bin/suid-so** SUID executable is vulnerable to shared object injection.
+
+First, execute the file and note that currently it displays a progress bar before exiting:
+
+`/usr/local/bin/suid-so`  
+
+Run **strace** on the file and search the output for open/access calls and for "no such file" errors:
+
+`strace /usr/local/bin/suid-so 2>&1 | grep -iE "open|access|no such file"`
+
+#### Breakdown of the Command  
+
+**System call tracer** — records every system call a program makes as it runs. System calls are how programs interact with the kernel — opening files, reading memory, executing commands etc.
+
+`2>&1`
+
+Redirect **stderr** (2) to **stdout** (1) — combining both streams into one.
+
+strace outputs to stderr by default so without this you wouldn't see anything when piping to grep.
+
+```
+2 = stderr (error output)
+1 = stdout (normal output)
+>& = redirect to
+```
+
+----------
+
+Filter the output:
+
+- `-i` — case insensitive
+- `-E` — extended regex (allows `|` for OR)
+- `"open|access|no such file"` — show lines containing any of these words:
+    - `open` — files being opened
+    - `access` — files being accessed/checked
+    - `no such file` — files that don't exist
 
 
+Note that the executable tries to load the /home/user/.config/libcalc.so shared object within our home directory, but it cannot be found.
+
+Create the **.config** directory for the libcalc.so file:
+
+`mkdir /home/user/.config`
+
+Example shared object code can be found at **/home/user/tools/suid/libcalc.c**. It simply spawns a Bash shell. Compile the code into a shared object at the location the **suid-so** executable was looking for it:
+
+`gcc -shared -fPIC -o /home/user/.config/libcalc.so /home/user/tools/suid/libcalc.c`
+
+Execute the **suid-so** executable again, and note that this time, instead of a progress bar, we get a root shell.
+
+`/usr/local/bin/suid-so`
+
+------
+
+## SUID / SGID Executables - Environmental Variables 
+
+
+The **/usr/local/bin/suid-env** executable can be exploited due to it inheriting the user's PATH environment variable and attempting to execute programs without specifying an absolute path.
+
+First, execute the file and note that it seems to be trying to start the apache2 webserver:
+
+`/usr/local/bin/suid-env`
+
+Run strings on the file to look for strings of printable characters:
+
+`strings /usr/local/bin/suid-env`
+
+One line ("service apache2 start") suggests that the service executable is being called to start the webserver, however the full path of the executable (/usr/sbin/service) is not being used.
+
+Compile the code located at /home/user/tools/suid/service.c into an executable called service. This code simply spawns a Bash shell:
+
+`gcc -o service /home/user/tools/suid/service.c`
+
+![](/img/user/Attachments/service-code-exploit.png)
+
+**Breakdown of service.c**
+The exploit code shows that `setuid(0)` is setting the necessary root privileges and then using the `system` command to execute a bash shell with root privileges
+
+Prepend the current directory (or where the new service executable is located) to the PATH variable, and run the suid-env executable to gain a root shell:
+
+`PATH=.:$PATH /usr/local/bin/suid-env`
 
 
 
