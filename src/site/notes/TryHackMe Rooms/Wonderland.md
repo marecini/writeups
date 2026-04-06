@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T14:35:40.990+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T16:17:31.873+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)
@@ -50,6 +50,30 @@ Using the help command it shows that information can be acquired from the image 
 
 Running the command shows that this image is indeed hiding valuable information and there is an embedded file `hint.txt` encrypted with `rijndael-128, cbc` and a passphrase is required to decompress this image to acquire the file. 
 
+## Enumeration #2 
+
+Looping back to the **enumeration** phase since the `hint.txt` reveals an endpoint. Exploring it is clear that one must really follow the rabbit.
+
+`/r/`
+
+![](/img/user/Attachments/r-e.png)
+
+`/ra/b/b/i/t`
+
+![](/img/user/Attachments/rabbit-e.png)
+
+Looking to the source code might be some credentials.
+![](/img/user/Attachments/ssh-creds.png)
+
+**Credentials**
+`alice:HowDothTheLittleCrocodileImproveHisShiningTail`
+
+![](/img/user/Attachments/ssh.png)
+
+Trying them out sure enough grants access to the SSH box as alice. 
+
+> Moving on to Post-exploitation from here
+
 --------
 ## Exploitation
 
@@ -74,6 +98,19 @@ Once again the room states to follow the rabbit.
 ------
 
 ## Post-exploitation
+
+```
+# Listing what is in Alice's home directory
+-rw------- 1 root root   66 May 25  2020 root.txt  
+-rw-r--r-- 1 root root 3577 May 25  2020 walrus_and_the_carpenter.py
+```
+
+There is a root.txt which obviously is unreadable as the user alice. The room states a `user.txt` file is present. 
+
+![](/img/user/Attachments/users-on-ssytem.png)
+
+There are 4 existing users on the system
+
 
 ## Pwnage
 
