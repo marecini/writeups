@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:51:19.637+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:57:43.033+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)
@@ -230,8 +230,10 @@ This is a success and now there is access via SSH as hatter and hatter is in `ha
 
 ![](/img/user/Attachments/root%201.png)
 
+**user.txt** flag is found in `/root/user.txt`
 ## Pwnage
 
+User flag `thm{"Curiouser and curiouser!"}`
 Root flag `thm{Twinkle, twinkle, little bat! How I wonder what you’re at!}`
 
 ## Attack Pattern Analysis (APA)
