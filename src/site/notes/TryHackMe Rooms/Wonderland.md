@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:57:43.033+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"created":"2026-04-06T13:26:22.348+02:00","updated":"2026-04-06T21:59:18.688+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)
@@ -7,6 +7,10 @@
 ----------
 ## Description
 
+This room demonstrates vulnerabilities in: 
+1. SUID-binaries
+2. Steganography 
+3. Exposed credentials via source code
 
 ## Recon
 
