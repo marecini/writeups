@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-09T12:08:54.854+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-09T13:49:19.964+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 
@@ -32,6 +32,8 @@ Once the running ports and services are discovered we move forward to enumeratin
 * /css
 * /img
 * /js
+* /admin/index.html -> blank page
+* /cgi-bin/test.cgi -> 404
 
 
 **SSH Key from /backup**
@@ -53,7 +55,7 @@ john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
 ````
 
 
-Let's crack it using john
+Let's crack it using john 
 
 ![](/img/user/Attachments/hashcracked.png)
 
@@ -63,9 +65,39 @@ The password is `letmein` let's use it as the passphrase for the ssh key and aft
 
 Upon using the ssh key to connect to target it is clear that the signing algorithm is too old for the newer versions of ssh client. Thus the flag `-o PubkeyAcceptedKeyTypes=+ssh-rsa` is required.
 
-`ssh -i id_rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa turtle@10.80.141.42`
+```bash
+ssh -i id_rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa turtle@10.80.141.42
+```
+
 
 This command allows for connecting to the target. However it is not that easy. The password recovered by **john** only allows the use of the ssh-key since the key is protected by a passphrase (`letmein`). A password for the user `turtle` is also required which means further enumeration must be done. 
+
+--------
+
+### Discovering CVE-2003-1418
+
+```bash
+nikto -h 10.80.141.42
+```
+
+![](/img/user/Attachments/cve-scan.png)
+
+Running nikto against the target reveals that the apache version on this target is vulnerable to the **ETag header** being used to reveal sensitive information.
+
+**Description from NVD**
+```
+Apache HTTP Server 1.3.22 through 1.3.27 on OpenBSD allows remote attackers to obtain sensitive information via (1) the ETag header, which reveals the inode number, or (2) multipart MIME boundary, which reveals child process IDs (PID).
+```
+
+-----
+
+### Circling back to Nmap
+
+**Looking for UDP Ports**
+
+![](/img/user/Attachments/udp.png)
+
+Port 68 which is used by the DHCP is open/filtered. Filtered suggests that the firewall is blocking the requests from nmap. Further investigation must be done to confirm the availability of the service. 
 
 
 -----
