@@ -1,11 +1,18 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T19:48:30.502+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"created":"2026-04-08T21:25:31.537+02:00","updated":"2026-04-11T19:51:46.917+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 
 
 --------
 ## Description
+
+The important detail about this room in my experience is that if the kernel running on the system is not kept up to date it is very easy for a threat actor to achieve full control of the system and thus maneuver in whichever way is pleasing to the threat actor. 
+
+This room demonstrates vulnerabilities in:
+1. Outdated kernels
+2. Exposed SSH-key
+3. Weak password
 
 
 ---------
