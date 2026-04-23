@@ -2,7 +2,7 @@
 {"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","created":"2026-04-03T22:26:20.103+02:00","updated":"2026-04-05T18:36:28.214+02:00","dg-note-properties":{}}
 ---
 
-![](Attachments/redteaming2.png)
+![](/img/user/Attachments/redteaming2.png)
 ## Description
 
 This room demonstrates various basic techniques on how to escalate privileges in linux environment. 

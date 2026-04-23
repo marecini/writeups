@@ -2,7 +2,7 @@
 {"dg-publish":true,"permalink":"/try-hack-me-rooms/binex/","created":"2026-04-04T18:56:56.357+02:00","updated":"2026-04-05T13:51:11.994+02:00","dg-note-properties":{}}
 ---
 
-![](Attachments/redteaming2.png)
+![](/img/user/Attachments/redteaming2.png)
 ## Description
 
 
