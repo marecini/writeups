@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/develpy/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-23T15:21:53.438+02:00","updated":"2026-04-23T19:33:42.844+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/develpy/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-23T15:21:53.438+02:00","updated":"2026-04-23T19:35:15.353+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 
@@ -7,6 +7,11 @@
 
 --------
 ## Description
+
+This room demonstrates vulnerabilities in: 
+1. System functions not sanitizing user input
+2. Sensitive system backend exposed via the frontend
+3. cronjobs not secured by having proper file permissions
 
 
 ---------
