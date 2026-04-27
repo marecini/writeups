@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-26T12:07:48.473+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-27T08:58:14.003+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -7,6 +7,14 @@
 --------
 ## Description
 
+
+This room demonstrates vulnerabilities in: 
+1. SQL Injection
+2. Unencrypted/unhashed database credentials
+3. Weak passwords for all users on the system
+4. Python Hijacking / PATH environmental hijacking 
+5. (Also vulnerable to Pwnkit)
+6. SETUID-binaries
 
 ---------
 ## Recon
@@ -124,6 +132,26 @@ Sorry, user smokey may not run sudo on ip-10-114-167-160.
 
 Sadly, smokey's permissions are limited. Checking for cronjobs there are sadly no jobs running on a schedule so nothing to exploit there. Maybe it's time for some automation scripts. 
 
+----
+
+### SSH as Hazel - First Flag
+
+Using hydra to find the password for **hazel** didnt work. Trying the username as a password did. 
+
+```bash
+ssh hazel@TARGET
+```
+
+Logging in as hazel with SSH gets read access to both files in the directory which were not readable as the user **smokey**. Now 1st flag is acquired.
+
+`THM{G0Od_OLd_SQL_1nj3ct10n_&_w3@k_p@sSw0rd$}` 
+
+Checking out the **hasher.py** it seems it is a python script which encodes the input you give it in 2 different hashing algorithms namely SHA-1 and SHA-256. 
+
+
+
+-----
+
 ### Moving to LES 
 
 Let's use Linux Exploit Suggester.
@@ -162,15 +190,37 @@ uname -a
 Linux ip-10-114-167-160 5.15.0-138-generic #148~20.04.1-Ubuntu SMP Fri Mar 28 14:32:35 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
 ```
 
-Let's have a look at the ubuntu version running on the target and the kernel. So the kernel version is **5.15.0-138-generic** and the ubuntu release is **20.04.1**
+Let's have a look at the ubuntu version running on the target and the kernel. So the kernel version is **5.15.0-138-generic** and the ubuntu release is **20.04.1**. Due to compilation troubles it was pretty difficult acquiring a workable exploit on the target machine. 
+
+Trying the **pwnkit** approach which is confirmed to be vulnerable on the target due to **/usr/bin/pkexec** running the unpatched version it was not possible to compile and run the exploit to gain root. 
+
+It was also difficult transferring the necessary files to target machine. For some reason it's no problem to download from my machine to target but from the web to target the connection just hangs. 
+
+### Rooting as Hazel
+
+So, let's check out the options for privesc as Hazel.
+
+![](/img/user/Attachments/hazel-sudo-l.png)
+
+Looks like hazel is able to run python and hasher.py with root privileges. This is the way to own the system. Finally. 
 
 
+```bash
 
+# Let's create the malicious hashlib
+echo 'import os; os.system("/bin/bash -p")' > /tmp/hashlib.py
 
+# let's add it to the PATH
+sudo PYTHONPATH=/tmp /usr/bin/python3 /home/hazel/hasher.py
+```
 
+And root is achieved. Now /root/root.txt can be read.
 
+`THM{PytH0n_LiBr@RY_H1j@acKIn6}`
 
-
+Root flag is acquired.
 
 ------
 ## Attack Pattern Analysis (APA)
+
+nmap > reveals webapp vulnerable to SQLi > sqlmap gives ssh credentials > hazel has weak credentials for ssh also > user flag > PATH environmental hijacking with Python > root  
