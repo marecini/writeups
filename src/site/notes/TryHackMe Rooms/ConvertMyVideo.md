@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-04T20:45:54.787+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-04T22:41:06.404+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -307,8 +307,46 @@ find / -type -perm /4000 2>/dev/null
 
 Sure enough the well known Pwnkit vulnerability exist on this target. **/usr/bin/pkexec** binary confirms this finding. Let's get to it. 
 
+Let's identify the kernel and build of the target and acquire the CVE from github. 
 
+![](/img/user/Attachments/os-release.png)
 
+```bash
+cat /etc/os-release
+```
+
+[CVE-2021-4034](https://github.com/arthepsy/CVE-2021-4034) Exploit is available here. 
+
+![](/img/user/Attachments/pkexec.png)
+
+```bash
+pkexec --version  
+pkexec version 0.105
+```
+
+Looking at pkexec it is indeed vulnerable due to SUID is set. 
+
+**[Seclists.org](https://seclists.org/oss-sec/2022/q1/80) confirms this is indeed the holy grail**
+```
+This vulnerability is an attacker's dream come true:
+
+- pkexec is installed by default on all major Linux distributions (we
+  exploited Ubuntu, Debian, Fedora, CentOS, and other distributions are
+  probably also exploitable);
+
+- pkexec is vulnerable since its creation, in May 2009 (commit c8c3d83,
+  "Add a pkexec(1) command");
+
+- any unprivileged local user can exploit this vulnerability to obtain
+  full root privileges;
+
+- although this vulnerability is technically a memory corruption, it is
+  exploitable instantly, reliably, in an architecture-independent way;
+
+- and it is exploitable even if the polkit daemon itself is not running.
+```
+
+Since target has an older version of **gcc** it is not possible to compile the exploit and transfer it to target afterwards. Luckily there are multiple approaches with pwnkit. 
 
 ------
 ## Attack Pattern Analysis (APA)
