@@ -1,11 +1,17 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-05T08:28:29.563+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","suid-binaries","pwnkit","commandinjection"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-05T08:35:13.677+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","suid-binaries","pwnkit","commandinjection"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
 
 --------
 ## Description
+
+This room demonstrates vulnerabilities in: 
+1. SUID-binaries
+2. Weak Sanitization on the webapp 
+3.  Local Privilege Escalation (pkexec /pwnkit)
+4. 
 
 
 ---------
@@ -395,5 +401,13 @@ chmod +x cve-2021-4034
 At last root is gained. let's acquire the flag. 
 **root flag: ** `flag{d9b368018e912b541a4eb68399c5e94a}`
 
+### Breakdown of Local Privilege Escalation Vulnerability - Pwnkit from NVD 
+
+```
+A local privilege escalation vulnerability was found on polkit's pkexec utility. The pkexec application is a setuid tool designed to allow unprivileged users to run commands as privileged users according predefined policies. The current version of pkexec doesn't handle the calling parameters count correctly and ends trying to execute environment variables as commands. An attacker can leverage this by crafting environment variables in such a way it'll induce pkexec to execute arbitrary code. When successfully executed the attack can cause a local privilege escalation given unprivileged users administrative rights on the target machine.
+```
+
 ------
 ## Attack Pattern Analysis (APA)
+
+nmap > vulnerable script with weak sanitization > command injection > named pipe for rev shell > suid binary vuln in pkexec > root 
