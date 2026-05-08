@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-08T16:28:27.790+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-08T17:24:39.835+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -42,8 +42,47 @@ Running the above command on both hex strings shows that there is a user named *
 
 The 2 VoIP ports are part of the FOSS framework installed on the server. (Asterisk)
 
------
+
+![](/img/user/Attachments/hydra-login-found.png)
+
+
+Both hydra and metasploit confirms these credentials. Let's authenticate with these credentials. 
+
+---
+
 ## Exploitation
+
+### Enumerating Asterisk Call Manager 5.0.2 
+
+![](/img/user/Attachments/action-status-error.png)
+
+
+```bash
+Action: Login
+Username: admin
+Secret: abc123
+```
+
+![](/img/user/Attachments/ami-admin-access.png)
+
+
+![](/img/user/Attachments/manager-show-settings.png)
+
+```bash
+Action: Command Command: manager show settings [Enter] [Enter]
+```
+
+![](/img/user/Attachments/ami-core-version.png)
+
+```bash
+Action: Command Command: core show version [Enter] [Enter]
+```
+
+
+
+
+-----
+
 
 
 
