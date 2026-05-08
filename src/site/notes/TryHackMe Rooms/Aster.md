@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-08T17:24:39.835+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-08T17:55:20.474+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -65,18 +65,29 @@ Secret: abc123
 
 ![](/img/user/Attachments/ami-admin-access.png)
 
+And the credentials work. Admin access is achieved. Let's explore the system. 
 
 ![](/img/user/Attachments/manager-show-settings.png)
 
 ```bash
-Action: Command Command: manager show settings [Enter] [Enter]
+Action: Command 
+Command: manager show settings 
+[Enter] 
+[Enter]
 ```
 
 ![](/img/user/Attachments/ami-core-version.png)
 
 ```bash
-Action: Command Command: core show version [Enter] [Enter]
+Action: Command 
+Command: core show version 
+[Enter] 
+[Enter]
 ```
+
+![](/img/user/Attachments/pjsip-files-empty.png)
+
+Since `pjsip show auths` returns **"No objects found,"** ==it confirms the server is **not** using the newer PJSIP driver for its users==. Also the empty files for the 2 config files shown in the screenshot further confirms this. 
 
 
 
