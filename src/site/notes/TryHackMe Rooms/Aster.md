@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-08T17:55:20.474+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-09T19:09:21.561+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -90,15 +90,51 @@ Command: core show version
 Since `pjsip show auths` returns **"No objects found,"** ==it confirms the server is **not** using the newer PJSIP driver for its users==. Also the empty files for the 2 config files shown in the screenshot further confirms this. 
 
 
+![](/img/user/Attachments/pw.png)
 
+```bash
+Action: Command
+Command: sip show users
+```
 
------
+```
+# Harry credentials
+username: Harry
+Secret: p4ss#w0rd!#
+```
 
+Testing out these credentials to authenticate with the Asterisk server fails. However it is also revealed via further enumeration that only 1 user is configured - **admin** - Lets try SSH as Harry
 
+![](/img/user/Attachments/harry-ssh.png)
+
+Its a success! Now it's finally looking like something. 
+
+#### 1st flag: thm{bas1c_aster1ck_explotat1on}
 
 
 ----
 ## Post-exploitation
+
+![](/img/user/Attachments/jarfile.png)
+
+```bash
+scp harry@10.112.145.21:Example_Root.jar ./
+```
+
+So there is a .jar file. Let's acquire it to my machine. Now time to explore the file. First task is to unzip it and check out the contents. Secondly, is to use strings on the **.class** file. 
+
+```
+# extracting 
+unzip Example_root.class -d folder/ 
+
+# Reveal info 
+strings Example_Root.class
+```
+
+![](/img/user/Attachments/strings-java-file.png)
+
+What stands out in the output from **strings** is the **flag.dat & root.txt** file. Time to acquire the root flag. 
+
 
 
 ------
