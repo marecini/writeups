@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-09T19:09:21.561+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-05-05T09:33:48.896+02:00","updated":"2026-05-09T20:48:50.923+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)
@@ -133,9 +133,50 @@ strings Example_Root.class
 
 ![](/img/user/Attachments/strings-java-file.png)
 
-What stands out in the output from **strings** is the **flag.dat & root.txt** file. Time to acquire the root flag. 
+What stands out in the output from **strings** is the **flag.dat & root.txt** file. Time to acquire the root flag.  So upon exploring the system it was easy to determine that **harry** has no permissions to run sudo on the box. Nothing valuable in the crontab and lastly no binaries with SetUID set. 
 
+----
 
+### Moving to Linux Exploit Suggester
+
+Running the script on the server reveals a plethora of kernel exploits which are available. 
+
+### Kernel Exploitation
+
+This was too easy. And upon executing this attack the flag was nowhere to be found. Reading the THM instructions the .jar file must be reversed to get the flag. Les.sh reveals a CVE which can be used to exploit the kernel and gets root access. 
+
+**Kernel Exploitation**
+```
+# acquire the kernel exploit
+https://ssd-disclosure.com/ssd-advisory-overlayfs-pe/
+
+# transfer it to target via python http server or just nano the file
+
+# compile it with gcc
+gcc -o exploit.c exploit
+
+# run it
+./exploit
+
+```
+
+Root is gained. Not the intended way though. 
+
+![](/img/user/Attachments/root%204.png)
+
+### Reversing the .jar file
+
+So reversing the file is straight forward. 
+
+```
+# create the trigger
+touch /tmp/flag.dat
+
+# run the file 
+java Example_root.jar 
+```
+
+Once running the command the root.txt file is generated. The trigger file can be empty. 
 
 ------
 ## Attack Pattern Analysis (APA)
