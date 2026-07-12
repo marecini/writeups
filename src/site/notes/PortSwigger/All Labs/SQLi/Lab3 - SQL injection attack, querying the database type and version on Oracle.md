@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/all-labs/sq-li/lab3-sql-injection-attack-querying-the-database-type-and-version-on-oracle/","created":"2026-03-26T09:42:14.935+01:00","updated":"2026-04-07T10:23:15.613+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/port-swigger/all-labs/sq-li/lab3-sql-injection-attack-querying-the-database-type-and-version-on-oracle/","dg-note-properties":{}}
 ---
 
 

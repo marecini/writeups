@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/sea-surfer/","tags":["#professionalreport"],"created":"2026-05-10T20:27:34.391+02:00","updated":"2026-05-10T20:27:58.638+02:00","dg-note-properties":{"tags":["#professionalreport"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/sea-surfer/","tags":["#professionalreport"],"dg-note-properties":{"tags":["#professionalreport"]}}
 ---
 
 
@@ -7,6 +7,8 @@
 
 ----
 ## Vulnerability Classification
+
+To categorize weaknesses, this report utilizes the industry-standard **CWE (Common Weakness Enumeration)** taxonomy. Severity is calculated using the **CVSS (Common Vulnerability Scoring System)** to produce a numerical score reflecting the principle characteristics and impact of each finding
 
 ----
 ## Reconnaissance

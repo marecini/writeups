@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/bscp-path/lab1-web-shell-upload-via-extension-blacklist-bypass/","created":"2026-03-24T12:28:11.031+01:00","updated":"2026-04-07T10:22:21.935+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/port-swigger/bscp-path/lab1-web-shell-upload-via-extension-blacklist-bypass/","dg-note-properties":{}}
 ---
 
 

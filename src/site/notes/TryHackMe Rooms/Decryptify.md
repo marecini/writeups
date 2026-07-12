@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/decryptify/","tags":["tryhackme","decryptify","insecure-randomness","#offensivesecurity","ethicalhacking","#writeup","#marecini"],"created":"2026-03-31T17:31:09.113+02:00","updated":"2026-03-31T17:40:23.080+02:00","dg-note-properties":{"tags":["tryhackme","decryptify","insecure-randomness","#offensivesecurity","ethicalhacking","#writeup","#marecini"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/decryptify/","tags":["tryhackme","decryptify","insecure-randomness","#offensivesecurity","ethicalhacking","#writeup","#marecini"],"dg-note-properties":{"tags":["tryhackme","decryptify","insecure-randomness","#offensivesecurity","ethicalhacking","#writeup","#marecini"]}}
 ---
 
 

@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","suid-binaries","pwnkit","commandinjection"],"created":"2026-04-28T07:22:40.350+02:00","updated":"2026-05-05T08:35:13.677+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","suid-binaries","pwnkit","commandinjection"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/convert-my-video/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","suid-binaries","pwnkit","commandinjection"],"dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","suid-binaries","pwnkit","commandinjection"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)

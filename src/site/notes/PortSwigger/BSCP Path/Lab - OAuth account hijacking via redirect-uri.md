@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/bscp-path/lab-o-auth-account-hijacking-via-redirect-uri/","created":"2026-03-25T18:48:15.386+01:00","updated":"2026-04-07T10:22:14.908+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/port-swigger/bscp-path/lab-o-auth-account-hijacking-via-redirect-uri/","dg-note-properties":{}}
 ---
 
 

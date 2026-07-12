@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"created":"2026-04-24T11:00:25.212+02:00","updated":"2026-04-27T09:05:28.823+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/bibloteca/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)

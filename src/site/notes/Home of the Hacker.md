@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/home-of-the-hacker/","tags":["gardenEntry"],"created":"2026-03-31T16:02:03.548+02:00","updated":"2026-03-31T18:13:45.246+02:00","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/home-of-the-hacker/","tags":["gardenEntry"],"dg-note-properties":{}}
 ---
 
 ![](/img/user/fsociety.png)
