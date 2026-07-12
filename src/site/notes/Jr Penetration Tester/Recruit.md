@@ -74,8 +74,8 @@ Furthermore: "The API supports fetching CVs from external URLs such as HTTP and 
 ## Enumeration
 
 
-Checking out **/main** endpoint reveals an email sent from HR to IT-support. 
-
+Checking out **/mail** endpoint reveals an email sent from HR to IT-support. 
+![Screenshot_20260712_210910.png](/img/user/Screenshot_20260712_210910.png)
 Valid email format is found and confirmed 
 ```
 it-support@recruit.thm
