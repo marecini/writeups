@@ -76,6 +76,8 @@ Furthermore: "The API supports fetching CVs from external URLs such as HTTP and 
 
 ## Enumeration
 
+### Exposed Endpoint with confirmed usernames
+
 
 Checking out **/mail** endpoint reveals an email sent from HR to IT-support. 
 ![Screenshot_20260712_210910.png](/img/user/Screenshot_20260712_210910.png)
@@ -92,6 +94,8 @@ Furthermore, the mail reveals 2 things.
 -----
 
 ## Exploitation
+
+### Open Redirect Vulnerability
 
 - So, the "cv" parameter is required otherwise the frontend shows "missing cv parameter"
 - The webserver is setup correctly and enables me to exploit **Open Redirect** with the "file://" scheme and i can now read the **config.php**. 
@@ -120,12 +124,30 @@ password for HR: hrpassword123
 
 ## Post-exploitation
 
+### Logging in as HR 
+
 Now I have successfully logged in as HR and retrieved the first flag. 
 ```
 THM{LOGGED_IN_USER}
 ```
 ![hr-access.png](/img/user/hr-access.png)
 
+So the dashboard doesnt reveal much other than people and a flag. I already know that the admin credentials are stored in the database. This was discovered by reading the mail.log from /mail endpoint. 
+
+### On the hunt for the database
+
+Trying to use the same tactic to read other sensitive files. First attempt was at **db.php** which gave an access denied.
+
+![db.php-access-denied.png](/img/user/db.php-access-denied.png)
+
 ------
 
-## Attack Pattern Analysis (APA)
+## Attack Pattern Analysis (APA) aka Attack Chain
+
+
+
+| Vulnerability                                                                  | Severity | Remediation                                                                                                               |
+| ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Exposed usernames on unprotected endpoints                                     | Medium   | Setup login mechanisms such as by OAuth/JWT/2FA                                                                           |
+| Vulnerable library allowing multiple URI schemes and missing proper validation | High     | Use a python library which automatically rejects passing local files in the URL and preventing the abuse of Open Redirect |
+| Open Redirect flaw                                                             | Critical |                                                                                                                           |
