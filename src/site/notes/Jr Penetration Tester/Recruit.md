@@ -11,6 +11,9 @@
 ---------
 ## Recon
 
+Tech stack
+SSH DNS PHP 
+
 As always a full nmap scan is required to discover running services and active ports on the system. 
 
 ```
@@ -28,7 +31,7 @@ Nmap done: 1 IP address (1 host up) scanned in 14.68 seconds
 
 Once the running ports and services are discovered we move forward to enumerating the identified services and ports. 
 
-![nmap.png](/img/user/nmap.png)
+[]()![nmap.png](/img/user/nmap.png)
 
 ### Hidden Directories
 
@@ -90,12 +93,38 @@ Furthermore, the mail reveals 2 things.
 
 ## Exploitation
 
+- So, the "cv" parameter is required otherwise the frontend shows "missing cv parameter"
+- The webserver is setup correctly and enables me to exploit **Open Redirect** with the "file://" scheme and i can now read the **config.php**. 
+
+This means that the library running on this server is older and allows for redirects without validating the second part of the request. Now I can abuse the fact that this library accepts multiple URI schemes, enter a valid URL, which is accepted, enter a file, which the server will accept because the library accepts it and doesnt check the file being requested.
+
+```bash
+GET /file.php?cv=file://config.php
+```
+
+![open-redirect-success.png](/img/user/open-redirect-success.png)
+
+```
+
+
+$APP_NAME        = 'Recruit';
+$APP_ENV         = 'production';
+$APP_VERSION     = '1.2.4';
+$APP_DEBUG       = false;
+
+password for HR: hrpassword123
+```
 
 
 ----
 
 ## Post-exploitation
 
+Now I have successfully logged in as HR and retrieved the first flag. 
+```
+THM{LOGGED_IN_USER}
+```
+![hr-access.png](/img/user/hr-access.png)
 
 ------
 
