@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit2/","tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"],"created":"2026-08-02T10:20:08.614+02:00","updated":"2026-08-02T14:52:51.369+02:00","dg-note-properties":{"tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"]}}
+{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit2/","tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"],"created":"2026-08-02T10:20:08.614+02:00","updated":"2026-08-02T15:38:59.814+02:00","dg-note-properties":{"tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"]}}
 ---
 
 
@@ -19,11 +19,6 @@ During the assessment of the Recruit web application, multiple vulnerabilities w
 | 5    | SQL Injection               | Critical | Database enumeration & extraction     |
 | 6    | Admin credential disclosure | Critical | Admin account compromised             |
 
-
-
-```smart-table
-{"columns":[{"id":"c1-v2bet","name":"Vulnerability","type":"text"},{"id":"c2-luorc","name":"Severity","type":"text","options":[{"label":"Todo","color":"gray"},{"label":"In progress","color":"blue"},{"label":"Done","color":"green"}]},{"id":"c3-k4emn","name":"Impact","type":"text"}],"rows":[{"id":"r6-viglh","cells":{"c1-v2bet":"Open Redirect","c2-luorc":"Low","c3-k4emn":"Bypass SSRF Allowlist"}},{"id":"r7-4bh6s","cells":{"c1-v2bet":"LFI / Arbitrary File Read","c2-luorc":"High","c3-k4emn":"Disclosure of application source code"}}],"sort":null,"filters":{},"showFilters":false}
-```
 
 ## Vulnerability Classification
 
@@ -51,59 +46,107 @@ Black hat
 **CWE**: CWE-601
 **CVSS:** 3.1
 **Description**
+The application contained an Open Redirect vulnerability that allowed user-controlled redirection to arbitrary destinations.
 **Impact**
+An attacker can abuse the redirect functionality to redirect users to arbitrary locations. In this assessment, the vulnerability enabled the SSRF protection to be bypassed, ultimately contributing to arbitrary file disclosure.
 **Evidence:**
+See "Cyber Kill Chain" Section.
 **Remediation**
+Validate redirect destinations using an allowlist of trusted hosts or replace user-controlled redirects with server-side mappings.
+
+----
 ### Finding 2 Server-side Request Forgery ~ SSRF
 
 **Severity:** High
 **CWE**: CWE-918
 **CVSS:** 
 **Description**
+After bypassing the allowlist, the vulnerable server followed the redirect and accessed internal resources on behalf of the attacker.
 **Impact**
 **Evidence:**
 **Remediation**
+
+----
 ### Finding 3 Arbitrary Local File Read
 
 **Severity:** 
 **CWE**: 
 **CVSS:** 
 **Description**
+The SSRF primitive was abused to retrieve the PHP source code of internal files, disclosing hardcoded HR credentials.
 **Impact**
 **Evidence:**
 **Remediation**
 
+----
 ### Finding 4 Hardcoded Credentials
 
 **Severity:** 
 **CWE**: 
 **CVSS:** 
 **Description**
+The recovered credentials were used to authenticate as an HR user, exposing additional application functionality.
 **Impact**
 **Evidence:**
 **Remediation**
 
+----
 ### Finding 4 SQL Injection
 
 **Severity:** 
 **CWE**: 
 **CVSS:** 
 **Description**
+The candidate search functionality was vulnerable to SQL injection, allowing extraction of administrator credentials from the backend database.
 **Impact**
 **Evidence:**
 **Remediation**
 
-
 ----
 
-## Attack Narrative
+## Cyber Kill Chain
 
-### Open Redirect discovered & read config.php
+#### Step 1 – Open Redirect
+
+The application accepted a user-controlled redirect destination without sufficient validation. This allowed an attacker to bypass the SSRF allowlist by first requesting an approved URL that redirected to an arbitrary destination.
+
+---
+
+#### Step 2 – SSRF
+
+After bypassing the allowlist, the vulnerable server followed the redirect and accessed internal resources on behalf of the attacker.
+
+---
+
+#### Step 3 – Arbitrary File Read
+
+The SSRF primitive was abused to retrieve the PHP source code of internal files, disclosing hardcoded HR credentials.
+
 ![open-redirect-success 1.png](/img/user/open-redirect-success%201.png)
 
-### SQL Injection discovered
+---
 
-![sql-injection-confirmed 2.png](/img/user/sql-injection-confirmed%202.png)
+#### Step 4 – HR Authentication
+
+The recovered credentials were used to authenticate as an HR user, exposing additional application functionality.
+
+![hr-access 1.png](/img/user/hr-access%201.png)
+
+---
+
+#### Step 5 – SQL Injection
+
+The candidate search functionality was vulnerable to SQL injection, allowing extraction of administrator credentials from the backend database.
+
+![[sql-injection-confirmed 2.png\|sql-injection-confirmed 2.png]]
+
+---
+
+#### Step 6 – Administrative Access
+
+The recovered administrator credentials were used to authenticate as an administrator, resulting in full compromise of the application.
+
+
 
 ----
 
