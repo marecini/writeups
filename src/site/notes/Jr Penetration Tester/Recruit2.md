@@ -41,7 +41,6 @@ Black hat
 
 ## Technical Findings
 
-
 ### Finding 1 ~ Open Redirect
 
 **Severity:** Low
@@ -51,7 +50,16 @@ Black hat
 **Impact**
 **Evidence:**
 **Remediation**
-### Finding 2
+### Finding 2 Server-side Request Forgery ~ SSRF
+
+**Severity:** High
+**CWE**: CWE-918
+**CVSS:** 
+**Description**
+**Impact**
+**Evidence:**
+**Remediation**
+### Finding 3 Arbitrary Local File Read
 
 **Severity:** 
 **CWE**: 
@@ -60,7 +68,8 @@ Black hat
 **Impact**
 **Evidence:**
 **Remediation**
-### Finding 3 
+
+### Finding 4 Hardcoded Credentials
 
 **Severity:** 
 **CWE**: 
@@ -70,7 +79,7 @@ Black hat
 **Evidence:**
 **Remediation**
 
-### Finding 4 
+### Finding 4 SQL Injection
 
 **Severity:** 
 **CWE**: 
@@ -88,4 +97,12 @@ Black hat
 ### Open Redirect discovered & read config.php
 ![open-redirect-success 1.png](/img/user/open-redirect-success%201.png)
 
-### 
+### SQL Injection discovered
+
+![sql-injection-confirmed 2.png](/img/user/sql-injection-confirmed%202.png)
+
+----
+
+## Lessons Learned
+
+This assessment demonstrates how individually low- and medium-severity vulnerabilities can be chained together into a complete compromise of the application.
