@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit2/","tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"],"created":"2026-08-02T10:20:08.614+02:00","updated":"2026-08-02T15:41:30.190+02:00","dg-note-properties":{"tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"]}}
+{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit2/","tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"],"created":"2026-08-02T10:20:08.614+02:00","updated":"2026-08-02T15:42:07.820+02:00","dg-note-properties":{"tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"]}}
 ---
 
 # Recruit 
@@ -11,17 +11,6 @@
 During the assessment of the Recruit web application, multiple vulnerabilities were chained together to obtain administrative access. An Open Redirect enabled Server-Side Request Forgery, which resulted in arbitrary file disclosure and exposure of hardcoded HR credentials. After authenticating as an HR user, an authenticated SQL Injection vulnerability allowed extraction of administrator credentials from the backend database.
 
 ----
-
-
-| Step | Vulnerability               | Severity | Impact                                |
-| ---- | --------------------------- | -------- | ------------------------------------- |
-| 1    | Open Redirect               | Low      | Bypass SSRF Allowlist                 |
-| 2    | SSRF                        | High     | Internal resource access              |
-| 3    | LFI / Arbitrary File Read   | High     | Disclosure of application source code |
-| 4    | Hardcoded credentials       | Medium   | HR account compromise                 |
-| 5    | SQL Injection               | Critical | Database enumeration & extraction     |
-| 6    | Admin credential disclosure | Critical | Admin account compromised             |
-
 
 ## Vulnerability Classification
 
@@ -108,6 +97,16 @@ The candidate search functionality was vulnerable to SQL injection, allowing ext
 ----
 
 ## Cyber Kill Chain
+
+| Step | Vulnerability               | Severity | Impact                                |
+| ---- | --------------------------- | -------- | ------------------------------------- |
+| 1    | Open Redirect               | Low      | Bypass SSRF Allowlist                 |
+| 2    | SSRF                        | High     | Internal resource access              |
+| 3    | LFI / Arbitrary File Read   | High     | Disclosure of application source code |
+| 4    | Hardcoded credentials       | Medium   | HR account compromise                 |
+| 5    | SQL Injection               | Critical | Database enumeration & extraction     |
+| 6    | Admin credential disclosure | Critical | Admin account compromised             |
+
 
 #### Step 1 – Open Redirect
 
