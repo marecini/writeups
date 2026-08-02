@@ -19,16 +19,11 @@ During the assessment of the Recruit web application, multiple vulnerabilities w
 | 5    | SQL Injection               | Critical | Database enumeration & extraction     |
 | 6    | Admin credential disclosure | Critical | Admin account compromised             |
 
+
+
+```smart-table
+{"columns":[{"id":"c1-v2bet","name":"Vulnerability","type":"text"},{"id":"c2-luorc","name":"Severity","type":"text","options":[{"label":"Todo","color":"gray"},{"label":"In progress","color":"blue"},{"label":"Done","color":"green"}]},{"id":"c3-k4emn","name":"Impact","type":"text"}],"rows":[{"id":"r6-viglh","cells":{"c1-v2bet":"Open Redirect","c2-luorc":"Low","c3-k4emn":"Bypass SSRF Allowlist"}},{"id":"r7-4bh6s","cells":{"c1-v2bet":"LFI / Arbitrary File Read","c2-luorc":"High","c3-k4emn":"Disclosure of application source code"}}],"sort":null,"filters":{},"showFilters":false}
 ```
-
-| Vulnerability | Severity | Impact                |
-| --------------- | :--------: | ----------------------- |
-| LFI / Arbitrary File Read  |          | Disclosure of application source code                      |
-|               |          |                       |
-| Open Redirect |   Low    | Bypass SSRF Allowlist |
-
-```
-
 
 ## Vulnerability Classification
 
