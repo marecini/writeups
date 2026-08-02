@@ -19,7 +19,13 @@ During the assessment of the Recruit web application, multiple vulnerabilities w
 | 5    | SQL Injection               | Critical | Database enumeration & extraction     |
 | 6    | Admin credential disclosure | Critical | Admin account compromised             |
 
-
+```table
+| Vulnerability | Severity |
+| --- | --- |
+| Open Redirect | Bypass SSRF Allowlist |
+| LFI / Arbitrary File Read | Disclosure of application source code |
+<!-- tk:cols=210,427;rows=48,48,48 -->
+```
 
 ## Vulnerability Classification
 
