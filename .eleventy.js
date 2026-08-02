@@ -2,7 +2,25 @@ const slugify = require("@sindresorhus/slugify");
 const markdownIt = require("markdown-it");
 const fs = require("fs");
 const matter = require("gray-matter");
+// Obsidian writes [[Page\|Alias]] in frontmatter, but \| is an invalid YAML
+// escape sequence. This custom engine strips \| before parsing. Shared between
+// Eleventy's own frontmatter parser and the manual matter() call in
+// getAnchorAttributes so that wikilink resolution can read the permalink.
+const jsYamlForMatter = require(require.resolve("js-yaml", { paths: [require.resolve("gray-matter")] }));
+const matterOptions = {
+  engines: {
+    yaml: {
+      parse: (str) => jsYamlForMatter.load(str.replace(/\\\|/g, "|")),
+      stringify: (obj) => jsYamlForMatter.dump(obj),
+    },
+  },
+};
 const faviconsPlugin = require("eleventy-plugin-gen-favicons");
+const normalizeFavicon = require("./src/site/normalize-favicon.js");
+
+const FAVICON_SOURCE = "./src/site/favicon.svg";
+const FAVICON_NORMALIZED = "./.cache/favicon.normalized.svg";
+normalizeFavicon(FAVICON_SOURCE, FAVICON_NORMALIZED);
 const tocPlugin = require("eleventy-plugin-nesting-toc");
 const { parse } = require("node-html-parser");
 const htmlMinifier = require("html-minifier-terser");
@@ -16,6 +34,7 @@ const {
 const { basesPlugin } = require("./src/helpers/basesPlugin");
 
 const Image = require("@11ty/eleventy-img");
+const { isDecodableImage } = require("./src/helpers/imageFormat.js");
 function transformImage(src, cls, alt, sizes, widths = ["500", "700", "auto"]) {
   let options = {
     widths: widths,
@@ -24,8 +43,12 @@ function transformImage(src, cls, alt, sizes, widths = ["500", "700", "auto"]) {
     urlPath: "/img/optimized",
   };
 
-  // generate images, while this is async we don’t wait
-  Image(src, options);
+  // Generate images; async, but we don't wait for it. A rejection here
+  // (e.g. a corrupt file) must not become an unhandled rejection, which
+  // would fail the whole build.
+  Image(src, options).catch((err) => {
+    console.warn(`[image] Skipping optimization of ${src}: ${err.message}`);
+  });
   let metadata = Image.statsSync(src, options);
   return metadata;
 }
@@ -39,14 +62,14 @@ function getAnchorAttributes(filePath, linkTitle) {
   let fileName = filePath.replaceAll("&amp;", "&");
   let header = "";
   let headerLinkPath = "";
-  if (filePath.includes("#")) {
-    [fileName, header] = filePath.split("#");
+  if (fileName.includes("#")) {
+    [fileName, header] = fileName.split("#");
     headerLinkPath = `#${headerToId(header)}`;
   }
 
   let noteIcon = process.env.NOTE_ICON_DEFAULT;
   const title = linkTitle ? linkTitle : fileName;
-  let permalink = `/notes/${slugify(filePath)}`;
+  let permalink = `/notes/${slugify(fileName)}`;
   let deadLink = false;
   try {
     const startPath = "./src/site/notes/";
@@ -57,7 +80,7 @@ function getAnchorAttributes(filePath, linkTitle) {
       fullPath = `${startPath}${fileName}.md`;
     }
     const file = fs.readFileSync(fullPath, "utf8");
-    const frontMatter = matter(file);
+    const frontMatter = matter(file, matterOptions);
     if (frontMatter.data.permalink) {
       permalink = frontMatter.data.permalink;
     }
@@ -105,18 +128,7 @@ module.exports = function(eleventyConfig) {
     dynamicPartials: true,
   });
 
-  // Fix Obsidian wiki-link pipe escaping (\|) in YAML frontmatter.
-  // Obsidian writes [[Page\|Alias]] in frontmatter, but \| is an invalid
-  // YAML escape sequence inside double-quoted strings, causing js-yaml to throw.
-  const jsYaml = require(require.resolve("js-yaml", { paths: [require.resolve("gray-matter")] }));
-  eleventyConfig.setFrontMatterParsingOptions({
-    engines: {
-      yaml: {
-        parse: (str) => jsYaml.load(str.replace(/\\\|/g, "|")),
-        stringify: (obj) => jsYaml.dump(obj),
-      },
-    },
-  });
+  eleventyConfig.setFrontMatterParsingOptions(matterOptions);
   let markdownLib = markdownIt({
     breaks: true,
     html: true,
@@ -171,6 +183,26 @@ module.exports = function(eleventyConfig) {
         if (token.info === "transclusion") {
           const code = token.content.trim();
           return `<div class="transclusion">${md.render(code)}</div>`;
+        }
+        if (token.info === "gist") {
+          const code = token.content.trim();
+          // Support multiple gist references, one per line
+          const gistLines = code.split('\n').filter(line => line.trim());
+
+          const scripts = gistLines.map(line => {
+            line = line.trim();
+            // Parse format: [username/]gist-id[#filename]
+            const parts = line.split('#');
+            const gistPath = parts[0];
+            const filename = parts[1] || '';
+
+            // Build the GitHub Gist embed URL
+            const gistUrl = `https://gist.github.com/${gistPath}.js`;
+            const scriptUrl = filename ? `${gistUrl}?file=${encodeURIComponent(filename)}` : gistUrl;
+
+            return `<script src="${scriptUrl}"></script>`;
+          });
+          return scripts.join('\n');
         }
         if (token.info.startsWith("ad-")) {
           const code = token.content.trim();
@@ -520,7 +552,7 @@ module.exports = function(eleventyConfig) {
   }
 
 
-  eleventyConfig.addTransform("picture", function(str) {
+  eleventyConfig.addTransform("picture", async function(str) {
     if (!isMarkdownPage(this.page.inputPath)) {
       return str;
     }
@@ -531,6 +563,15 @@ module.exports = function(eleventyConfig) {
     for (const imageTag of parsed.querySelectorAll(".cm-s-obsidian img")) {
       const src = imageTag.getAttribute("src");
       if (src && src.startsWith("/") && !src.endsWith(".svg")) {
+        // Files sharp can't decode (e.g. HEIC or a truncated AVIF renamed
+        // to .jpg) keep their original <img> tag instead of a <picture>
+        // pointing at optimized files that will never exist. This must be
+        // a real decode probe, not just a header check: feeding an
+        // undecodable file to eleventy-img fails the whole build via
+        // unhandled promise rejections in its internals.
+        if (!(await isDecodableImage("./src/site" + decodeURI(src)))) {
+          continue;
+        }
         const cls = imageTag.classList.value;
         const alt = imageTag.getAttribute("alt");
         const width = imageTag.getAttribute("width") || '';
@@ -693,6 +734,10 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/site/scripts");
   eleventyConfig.addPassthroughCopy("src/site/styles/_theme.*.css");
   eleventyConfig.addPassthroughCopy({ "src/site/logo.*": "/" });
+  eleventyConfig.on("eleventy.before", () => {
+    normalizeFavicon(FAVICON_SOURCE, FAVICON_NORMALIZED);
+  });
+  eleventyConfig.addWatchTarget(FAVICON_SOURCE);
   eleventyConfig.addPlugin(faviconsPlugin, { outputDir: "dist" });
   eleventyConfig.addPlugin(tocPlugin, {
     ul: true,
@@ -704,7 +749,7 @@ module.exports = function(eleventyConfig) {
     read: true,
     compile: async function(inputContent, inputPath) {
       // Extract content after frontmatter (canvas HTML is already compiled by plugin)
-      const parsed = matter(inputContent);
+      const parsed = matter(inputContent, matterOptions);
       return async (data) => {
         // Return the HTML content directly without markdown processing
         return parsed.content;
@@ -722,6 +767,10 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("jsonify", function(variable) {
     return JSON.stringify(variable) || '""';
+  });
+
+  eleventyConfig.addFilter("notHidden", function (arr) {
+    return (arr || []).filter((item) => !item.data.hide);
   });
 
   eleventyConfig.addFilter("validJson", function(variable) {
