@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/0day/","tags":["offensivesecurity","ethicalhacking","0day","tryhackme"],"noteIcon":"","created":"2026-07-11T08:56:57.368+02:00","updated":"2026-04-11T19:53:49.754+02:00","dg-note-properties":{"tags":["offensivesecurity","ethicalhacking","0day","tryhackme"]}}
 ---
 
 ![](/img/user/Attachments/redteaming4.jpg)

@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/aster/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"noteIcon":"","created":"2026-07-11T08:56:53.112+02:00","updated":"2026-05-09T20:50:01.228+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)

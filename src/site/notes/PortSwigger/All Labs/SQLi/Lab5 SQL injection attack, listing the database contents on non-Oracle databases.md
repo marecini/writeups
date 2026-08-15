@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/all-labs/sq-li/lab5-sql-injection-attack-listing-the-database-contents-on-non-oracle-databases/","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/port-swigger/all-labs/sq-li/lab5-sql-injection-attack-listing-the-database-contents-on-non-oracle-databases/","noteIcon":"","created":"2026-07-11T08:56:48.791+02:00","updated":"2026-04-07T10:23:26.420+02:00","dg-note-properties":{}}
 ---
 
 

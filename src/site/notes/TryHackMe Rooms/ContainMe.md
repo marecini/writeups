@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/contain-me/","noteIcon":"","created":"2026-07-11T08:57:06.529+02:00","updated":"2026-04-03T19:27:33.237+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)

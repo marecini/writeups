@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/all-labs/sq-li/lab4-sql-injection-attack-querying-the-database-type-and-version-on-my-sql-and-microsoft/","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/port-swigger/all-labs/sq-li/lab4-sql-injection-attack-querying-the-database-type-and-version-on-my-sql-and-microsoft/","noteIcon":"","created":"2026-07-11T08:56:43.950+02:00","updated":"2026-04-07T10:23:21.803+02:00","dg-note-properties":{}}
 ---
 
 

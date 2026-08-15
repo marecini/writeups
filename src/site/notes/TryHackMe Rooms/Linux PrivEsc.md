@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","dg-note-properties":{}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/linux-priv-esc/","noteIcon":"","created":"2026-07-11T08:57:13.623+02:00","updated":"2026-04-05T18:36:28.214+02:00","dg-note-properties":{}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)

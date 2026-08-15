@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"],"dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/brains/","tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"],"noteIcon":"","created":"2026-07-11T08:56:52.228+02:00","updated":"2026-04-02T14:23:32.101+02:00","dg-note-properties":{"tags":["#tryhackme","brains","offensivesecurity","ethicalhacking","writeup","#authenticationbypass"]}}
 ---
 
 ![](/img/user/Attachments/1_IpVNsJXvAdv12YJ82oxO3A-2241369949.png)

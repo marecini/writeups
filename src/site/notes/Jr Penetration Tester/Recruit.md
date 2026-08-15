@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","#recruit","#jrpenetrationtester"],"dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","#recruit","#jrpenetrationtester"]}}
+{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","#recruit","#jrpenetrationtester"],"noteIcon":"","created":"2026-07-12T09:38:16.427+02:00","updated":"2026-08-02T10:02:43.309+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup","#recruit","#jrpenetrationtester"]}}
 ---
 
 ![](/img/user/Attachments/redteaming2.png)

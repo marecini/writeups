@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/develpy/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/develpy/","tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"],"noteIcon":"","created":"2026-07-11T08:56:51.380+02:00","updated":"2026-04-23T19:35:15.353+02:00","dg-note-properties":{"tags":["ethicalhacking","offensivesecurity","tryhackme","pentesting","writeup"]}}
 ---
 
 

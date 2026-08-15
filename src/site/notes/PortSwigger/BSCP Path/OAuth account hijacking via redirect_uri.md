@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/port-swigger/bscp-path/o-auth-account-hijacking-via-redirect-uri/","tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"],"dg-note-properties":{"tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"]}}
+{"dg-publish":true,"permalink":"/port-swigger/bscp-path/o-auth-account-hijacking-via-redirect-uri/","tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"],"noteIcon":"","created":"2026-07-11T08:56:54.446+02:00","updated":"2026-04-07T10:26:43.271+02:00","dg-note-properties":{"tags":["oauth","hijack","redirecturi","burpsuite","offensivesecurity","ethicalhacking","bscp"]}}
 ---
 
 

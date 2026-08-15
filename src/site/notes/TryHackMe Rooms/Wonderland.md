@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/wonderland/","tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"],"noteIcon":"","created":"2026-07-11T08:56:54.737+02:00","updated":"2026-04-06T21:59:18.688+02:00","dg-note-properties":{"tags":["tryhackme","offensivesecurity","ethicalhacking","wonderland","steganography","suid","suid-binaries","ssh"]}}
 ---
 
 ![](/img/user/Attachments/wonderland.png)

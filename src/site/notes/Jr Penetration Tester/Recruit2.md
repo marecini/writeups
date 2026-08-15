@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit2/","tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"],"created":"2026-08-02T10:20:08.614+02:00","updated":"2026-08-02T15:42:07.820+02:00","dg-note-properties":{"tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"]}}
+{"dg-publish":true,"permalink":"/jr-penetration-tester/recruit2/","tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"],"noteIcon":"","created":"2026-08-02T10:20:08.614+02:00","updated":"2026-08-02T15:42:07.820+02:00","dg-note-properties":{"tags":["#professionalreport","#vulnerabilities","ssrf","openredirect","lfi","hardcodedcredentials","sqlinjection","sqli"]}}
 ---
 
 # Recruit 

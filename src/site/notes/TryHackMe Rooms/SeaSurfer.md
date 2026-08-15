@@ -1,5 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/try-hack-me-rooms/sea-surfer/","tags":["#professionalreport"],"dg-note-properties":{"tags":["#professionalreport"]}}
+{"dg-publish":true,"permalink":"/try-hack-me-rooms/sea-surfer/","tags":["#professionalreport"],"noteIcon":"","created":"2026-07-11T08:56:46.580+02:00","updated":"2026-05-10T20:31:09.239+02:00","dg-note-properties":{"tags":["#professionalreport"]}}
 ---
 
 
